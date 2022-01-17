@@ -1,7 +1,14 @@
 import assert from 'assert';
 import { Pipeline } from './Pipeline';
-import type { StatefulPipelineEntity, HandlerContext } from './spi';
-import type { OnErrorHandler, HandlerResolver, StateRepository, OnBeforeHandler, OnAfterHandler } from './types';
+import type { HandlerResolver } from './spi';
+import type {
+  StatefulPipelineEntity,
+  HandlerContext,
+  OnErrorHandler,
+  StateRepository,
+  OnBeforeHandler,
+  OnAfterHandler
+} from './types';
 
 class PipelineBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext> {
   private repository: StateRepository<T, C>;

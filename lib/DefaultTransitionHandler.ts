@@ -1,5 +1,5 @@
-import type { StatefulPipelineEntity, Handler, HandlerContext } from './spi';
-import type { StateRepository, TransitionHandler } from './types';
+import type { TransitionHandler } from './spi';
+import type { StatefulPipelineEntity, Handler, HandlerContext, StateRepository } from './types';
 
 class DefaultTransitionHandler<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>
   implements TransitionHandler<T, C>

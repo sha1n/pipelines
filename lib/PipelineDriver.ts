@@ -1,4 +1,4 @@
-import { StatefulPipelineEntity, HandlerContext } from './spi';
+import { StatefulPipelineEntity, HandlerContext } from './types';
 import { Pipeline } from './Pipeline';
 import { retryAround, simpleRetryPolicy, RetryPolicy } from '@sha1n/ontime';
 

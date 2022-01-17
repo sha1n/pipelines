@@ -3,7 +3,7 @@ import { createStaticHandlerResolver } from '../lib/StaticHandlerResolverBuilder
 import { MyState } from './examples';
 import { aMockHandler } from './mocks';
 import type { DefaultTransitionHandler } from '../lib/DefaultTransitionHandler';
-import type { HandlerContext } from '../lib/spi';
+import type { HandlerContext } from '../lib/types';
 import type { MyEntity } from './examples';
 
 describe('StaticHandlerResolverBuilder', () => {
