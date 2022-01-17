@@ -5,7 +5,7 @@ import { StaticHandlerResolver } from '../lib/StaticHandlerResolver';
 import { NonRecoverablePipelineError } from '../lib/errors';
 import { MyState } from './examples';
 import { aMockHandler } from './mocks';
-import type { HandlerContext } from '../lib/spi';
+import type { HandlerContext } from '../lib/types';
 import type { MyEntity } from './examples';
 
 describe('StaticHandlerResolver', () => {

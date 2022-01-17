@@ -1,4 +1,4 @@
-import type { StatefulPipelineEntity, HandlerContext } from '../lib/spi';
+import type { StatefulPipelineEntity, HandlerContext } from '../lib/types';
 
 enum MyState {
   A,

@@ -11,8 +11,8 @@ import {
   aMockResolvingAfterHandler,
   aMockResolvingBeforeHandler
 } from './mocks';
-import type { HandlerContext, StateRepository } from '../lib/spi';
-import type { HandlerResolver } from '../lib/types';
+import type { HandlerResolver } from '../lib/spi';
+import type { HandlerContext, StateRepository } from '../lib/types';
 import type { MyState } from './examples';
 
 describe('PipelineBuilder', () => {

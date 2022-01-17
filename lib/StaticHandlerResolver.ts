@@ -2,8 +2,8 @@ import assert from 'assert';
 import { DefaultTransitionHandler } from './DefaultTransitionHandler';
 import { NoopTransitionHandler } from './NoopTransitionHandler';
 import { NonRecoverablePipelineError } from './errors';
-import type { StatefulPipelineEntity, Handler, HandlerContext } from './spi';
-import type { HandlerResolver, TransitionHandler } from './types';
+import type { HandlerResolver, TransitionHandler } from './spi';
+import type { StatefulPipelineEntity, Handler, HandlerContext } from './types';
 
 class StaticHandlerResolver<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>
   implements HandlerResolver<T, S, C>

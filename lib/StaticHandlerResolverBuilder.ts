@@ -1,5 +1,5 @@
 import { StaticHandlerResolver } from './StaticHandlerResolver';
-import type { StatefulPipelineEntity, Handler, HandlerContext } from './spi';
+import type { StatefulPipelineEntity, Handler, HandlerContext } from './types';
 
 class StaticHandlerResolverBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext> {
   private readonly resolver = new StaticHandlerResolver<T, S, C>();

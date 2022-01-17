@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { StatefulPipelineEntity } from '../../lib/spi';
+import { StatefulPipelineEntity } from '../../lib/types';
 import { Logger } from './logger';
 
 enum TaskState {

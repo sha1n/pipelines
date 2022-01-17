@@ -1,14 +1,14 @@
 import { v4 as uuid } from 'uuid';
 import { mock, mockFn } from 'jest-mock-extended';
 import { NonRecoverablePipelineError } from '../lib/errors';
-import type { Handler, HandlerContext } from '../lib/spi';
+import type { HandlerResolver, TransitionHandler } from '../lib/spi';
 import type {
+  Handler,
+  HandlerContext,
   OnErrorHandler,
-  HandlerResolver,
   StateRepository,
   OnBeforeHandler,
-  OnAfterHandler,
-  TransitionHandler
+  OnAfterHandler
 } from '../lib/types';
 import type { MyEntity, MyState } from './examples';
 

@@ -1,6 +1,13 @@
 import { NonRecoverablePipelineError } from './errors';
-import type { StatefulPipelineEntity, HandlerContext } from './spi';
-import type { HandlerResolver, OnAfterHandler, OnBeforeHandler, OnErrorHandler, StateRepository } from './types';
+import type { HandlerResolver } from './spi';
+import type {
+  StatefulPipelineEntity,
+  HandlerContext,
+  OnAfterHandler,
+  OnBeforeHandler,
+  OnErrorHandler,
+  StateRepository
+} from './types';
 
 class Pipeline<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext> {
   private readonly onError: OnErrorHandler<T, C>;
