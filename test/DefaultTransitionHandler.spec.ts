@@ -16,23 +16,14 @@ describe('DefaultTransitionHandler', () => {
     fixture(async ({ entity, nextState, repository, ctx }): Promise<void> => {
       const mockHandler = aMockHandler();
 
-      const handler = new DefaultTransitionHandler<
-        MyEntity,
-        MyState,
-        typeof ctx
-      >(mockHandler, nextState);
+      const handler = new DefaultTransitionHandler<MyEntity, MyState, typeof ctx>(mockHandler, nextState);
 
       await handler.handle(entity, repository, ctx);
 
       expect(mockHandler.handle).toHaveBeenCalledWith(entity, ctx);
       expect(mockHandler.handle).toHaveBeenCalledTimes(1);
-      expect(repository.updateState).toHaveBeenCalledWith(
-        entity,
-        nextState,
-        ctx
-      );
-      expect(repository.updateState).toHaveBeenCalledOnce();
-      expect(repository.updateFailed).not.toHaveBeenCalled();
+      expect(repository.update).toHaveBeenCalledWith(entity, ctx);
+      expect(repository.update).toHaveBeenCalledOnce();
     })
   );
 
@@ -42,20 +33,13 @@ describe('DefaultTransitionHandler', () => {
       const expectedError = anError();
       const mockHandler = aMockRejectingHandler(expectedError);
 
-      const handler = new DefaultTransitionHandler<
-        MyEntity,
-        MyState,
-        typeof ctx
-      >(mockHandler, nextState);
+      const handler = new DefaultTransitionHandler<MyEntity, MyState, typeof ctx>(mockHandler, nextState);
 
-      await expect(
-        handler.handle(entity, repository, ctx)
-      ).rejects.toThrowError(expectedError);
+      await expect(handler.handle(entity, repository, ctx)).rejects.toThrowError(expectedError);
 
       expect(mockHandler.handle).toHaveBeenCalledWith(entity, ctx);
       expect(mockHandler.handle).toHaveBeenCalledTimes(1);
-      expect(repository.updateState).not.toHaveBeenCalled();
-      expect(repository.updateFailed).not.toHaveBeenCalled();
+      expect(repository.update).not.toHaveBeenCalled();
     })
   );
 
@@ -67,25 +51,14 @@ describe('DefaultTransitionHandler', () => {
       const repository = aMockRejectingRepository(expectedError);
       const ctx = aHandlerContext();
 
-      const handler = new DefaultTransitionHandler<
-        MyEntity,
-        MyState,
-        typeof ctx
-      >(mockHandler, nextState);
+      const handler = new DefaultTransitionHandler<MyEntity, MyState, typeof ctx>(mockHandler, nextState);
 
-      await expect(
-        handler.handle(entity, repository, ctx)
-      ).rejects.toThrowError(expectedError);
+      await expect(handler.handle(entity, repository, ctx)).rejects.toThrowError(expectedError);
 
       expect(mockHandler.handle).toHaveBeenCalledWith(entity, ctx);
       expect(mockHandler.handle).toHaveBeenCalledTimes(1);
-      expect(repository.updateState).toHaveBeenCalledWith(
-        entity,
-        nextState,
-        ctx
-      );
-      expect(repository.updateState).toHaveBeenCalledOnce();
-      expect(repository.updateFailed).not.toHaveBeenCalled();
+      expect(repository.update).toHaveBeenCalledWith(entity, ctx);
+      expect(repository.update).toHaveBeenCalledOnce();
     })
   );
 });
@@ -94,7 +67,7 @@ function fixture(
   runTest: (args: {
     entity: MyEntity;
     nextState: MyState;
-    repository: StateRepository<MyEntity, MyState, HandlerContext>;
+    repository: StateRepository<MyEntity, HandlerContext>;
     ctx: HandlerContext;
   }) => Promise<void>
 ): () => Promise<void> {

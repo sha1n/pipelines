@@ -1,22 +1,15 @@
 import { NonRecoverablePipelineError } from './errors';
-import type {
-  HandlerContext,
-  HandlerResolver,
-  OnAfterHandler,
-  OnBeforeHandler,
-  OnErrorHandler,
-  Stateful,
-  StateRepository
-} from './types';
+import type { StatefulPipelineEntity, HandlerContext } from './spi';
+import type { HandlerResolver, OnAfterHandler, OnBeforeHandler, OnErrorHandler, StateRepository } from './types';
 
-class Pipeline<T extends Stateful<S>, S, C extends HandlerContext> {
+class Pipeline<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext> {
   private readonly onError: OnErrorHandler<T, C>;
   private readonly onBefore: OnBeforeHandler<T, C>;
   private readonly onAfter: OnAfterHandler<T, C>;
 
   constructor(
     private readonly handlerResolver: HandlerResolver<T, S, C>,
-    private readonly stateRepository: StateRepository<T, S, C>,
+    private readonly stateRepository: StateRepository<T, C>,
     onError?: OnErrorHandler<T, C>,
     onBefore?: OnBeforeHandler<T, C>,
     onAfter?: OnAfterHandler<T, C>
@@ -27,18 +20,14 @@ class Pipeline<T extends Stateful<S>, S, C extends HandlerContext> {
   }
 
   async handle(entity: T, ctx: C): Promise<T> {
-    const handler = this.handlerResolver.resolveHandlerFor(entity.getState());
+    const handler = this.handlerResolver.resolveHandlerFor(entity.state);
 
     try {
-      let maybeModified = await this.onBefore(entity, ctx);
-      maybeModified = await handler.handle(
-        maybeModified,
-        this.stateRepository,
-        ctx
-      );
-      await this.onAfter(maybeModified, ctx);
+      const maybeModified = await this.onBefore(entity, ctx);
+      const modifiedEntity = await handler.handle(maybeModified, this.stateRepository, ctx);
+      await this.onAfter(modifiedEntity, ctx);
 
-      return maybeModified;
+      return modifiedEntity;
     } catch (e) {
       return this.onError(e, entity, ctx);
     }
@@ -47,7 +36,8 @@ class Pipeline<T extends Stateful<S>, S, C extends HandlerContext> {
   private readonly getDefaultErrorHandler = () => {
     return (error: Error, entity: T, ctx: C) => {
       if (error instanceof NonRecoverablePipelineError) {
-        return this.stateRepository.updateFailed(entity, ctx);
+        entity.setFailedState();
+        return this.stateRepository.update(entity, ctx);
       } else {
         throw error;
       }

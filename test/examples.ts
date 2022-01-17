@@ -1,4 +1,4 @@
-import type { Stateful, HandlerContext } from '../lib/types';
+import type { StatefulPipelineEntity, HandlerContext } from '../lib/spi';
 
 enum MyState {
   A,
@@ -7,12 +7,12 @@ enum MyState {
   Failed
 }
 
-class MyEntity implements Stateful<MyState> {
+class MyEntity implements StatefulPipelineEntity<MyState> {
   state: MyState = MyState.A;
   evidence: string[] = [];
 
-  getState(): MyState {
-    return this.state;
+  setFailedState(): void {
+    this.state = MyState.Failed;
   }
 }
 

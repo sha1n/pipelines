@@ -1,4 +1,5 @@
 import { AssertionError } from 'assert';
+import { anError } from './mocks';
 import { mock } from 'jest-mock-extended';
 import { createPipeline } from '../lib/PipelineBuilder';
 import { MyEntity } from './examples';
@@ -8,14 +9,10 @@ import {
   aMockRejectingErrorHandler,
   aMockRepository,
   aMockResolvingAfterHandler,
-  aMockResolvingBeforeHandler,
-  anError
+  aMockResolvingBeforeHandler
 } from './mocks';
-import type {
-  HandlerContext,
-  HandlerResolver,
-  StateRepository
-} from '../lib/types';
+import type { HandlerContext, StateRepository } from '../lib/spi';
+import type { HandlerResolver } from '../lib/types';
 import type { MyState } from './examples';
 
 describe('PipelineBuilder', () => {
@@ -23,9 +20,7 @@ describe('PipelineBuilder', () => {
     test('when no handler resolver is specified', () => {
       const buildWithoutResolver = () =>
         createPipeline<MyEntity, MyState, HandlerContext>()
-          .withStateRepository(
-            mock<StateRepository<MyEntity, MyState, HandlerContext>>()
-          )
+          .withStateRepository(mock<StateRepository<MyEntity, HandlerContext>>())
           .withErrorHandler((err, entity) => Promise.resolve(entity))
           .build();
 
@@ -36,9 +31,7 @@ describe('PipelineBuilder', () => {
     test('when no repository is specified', () => {
       const buildWithoutRepository = () =>
         createPipeline<MyEntity, MyState, HandlerContext>()
-          .withHandlerResolver(
-            mock<HandlerResolver<MyEntity, MyState, HandlerContext>>()
-          )
+          .withHandlerResolver(mock<HandlerResolver<MyEntity, MyState, HandlerContext>>())
           .withErrorHandler((err, entity) => Promise.resolve(entity))
           .build();
 
@@ -66,13 +59,9 @@ describe('PipelineBuilder', () => {
     const pipelineHandler = build();
     expect(pipelineHandler).toBeDefined();
 
-    await expect(pipelineHandler.handle(entity, context)).resolves.toEqual(
-      entity
-    );
+    await expect(pipelineHandler.handle(entity, context)).resolves.toEqual(entity);
 
-    expect(mockHandlerResolver.resolveHandlerFor).toHaveBeenLastCalledWith(
-      entity.state
-    );
+    expect(mockHandlerResolver.resolveHandlerFor).toHaveBeenLastCalledWith(entity.state);
     expect(mockResolvingBeforeHandler).toBeCalledWith(entity, context);
     expect(mockResolvingAfterHandler).toBeCalledWith(entity, context);
   });
@@ -93,9 +82,7 @@ describe('PipelineBuilder', () => {
     const pipelineHandler = build();
     expect(pipelineHandler).toBeDefined();
 
-    await expect(pipelineHandler.handle(entity, context)).rejects.toThrow(
-      expectedError
-    );
+    await expect(pipelineHandler.handle(entity, context)).rejects.toThrow(expectedError);
 
     expect(mockErrorHandler).toBeCalledWith(expectedError, entity, context);
   });

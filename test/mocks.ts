@@ -1,14 +1,13 @@
 import { v4 as uuid } from 'uuid';
 import { mock, mockFn } from 'jest-mock-extended';
 import { NonRecoverablePipelineError } from '../lib/errors';
+import type { Handler, HandlerContext } from '../lib/spi';
 import type {
   OnErrorHandler,
-  Handler,
   HandlerResolver,
   StateRepository,
   OnBeforeHandler,
   OnAfterHandler,
-  HandlerContext,
   TransitionHandler
 } from '../lib/types';
 import type { MyEntity, MyState } from './examples';
@@ -16,16 +15,14 @@ import type { MyEntity, MyState } from './examples';
 function aMockHandler(): Handler<MyEntity, HandlerContext> {
   const handler = mock<Handler<MyEntity, HandlerContext>>();
 
-  handler.handle.mockImplementation((entity) => {
+  handler.handle.mockImplementation(entity => {
     return Promise.resolve(entity);
   });
 
   return handler;
 }
 
-function aMockRejectingHandler(
-  error: Error
-): Handler<MyEntity, HandlerContext> {
+function aMockRejectingHandler(error: Error): Handler<MyEntity, HandlerContext> {
   const handler = mock<Handler<MyEntity, HandlerContext>>();
 
   handler.handle.mockImplementation(() => {
@@ -35,42 +32,30 @@ function aMockRejectingHandler(
   return handler;
 }
 
-function aMockRepository(): StateRepository<MyEntity, MyState, HandlerContext> {
-  const repo = mock<StateRepository<MyEntity, MyState, HandlerContext>>();
+function aMockRepository(): StateRepository<MyEntity, HandlerContext> {
+  const repo = mock<StateRepository<MyEntity, HandlerContext>>();
 
-  repo.updateState.mockImplementation((entity) => {
-    return Promise.resolve(entity);
-  });
-  repo.updateFailed.mockImplementation((entity) => {
+  repo.update.mockImplementation(entity => {
     return Promise.resolve(entity);
   });
 
   return repo;
 }
 
-function aMockRejectingRepository(
-  error: Error
-): StateRepository<MyEntity, MyState, HandlerContext> {
-  const repo = mock<StateRepository<MyEntity, MyState, HandlerContext>>();
+function aMockRejectingRepository(error: Error): StateRepository<MyEntity, HandlerContext> {
+  const repo = mock<StateRepository<MyEntity, HandlerContext>>();
 
-  repo.updateState.mockImplementation(() => {
-    return Promise.reject(error);
-  });
-  repo.updateFailed.mockImplementation(() => {
+  repo.update.mockImplementation(() => {
     return Promise.reject(error);
   });
 
   return repo;
 }
 
-function aMockHandlerResolver(): HandlerResolver<
-  MyEntity,
-  MyState,
-  HandlerContext
-> {
+function aMockHandlerResolver(): HandlerResolver<MyEntity, MyState, HandlerContext> {
   const resolver = mock<HandlerResolver<MyEntity, MyState, HandlerContext>>();
   resolver.resolveHandlerFor.mockImplementation(() => {
-    return <TransitionHandler<MyEntity, MyState, HandlerContext>>{
+    return <TransitionHandler<MyEntity, HandlerContext>>{
       handle(entity: MyEntity): Promise<MyEntity> {
         return Promise.resolve(entity);
       }
@@ -80,12 +65,10 @@ function aMockHandlerResolver(): HandlerResolver<
   return resolver;
 }
 
-function aMockFailingHandlerResolver(
-  error: Error
-): HandlerResolver<MyEntity, MyState, HandlerContext> {
+function aMockFailingHandlerResolver(error: Error): HandlerResolver<MyEntity, MyState, HandlerContext> {
   const resolver = mock<HandlerResolver<MyEntity, MyState, HandlerContext>>();
   resolver.resolveHandlerFor.mockImplementation(() => {
-    return <TransitionHandler<MyEntity, MyState, HandlerContext>>{
+    return <TransitionHandler<MyEntity, HandlerContext>>{
       handle(): Promise<MyEntity> {
         return Promise.reject(error);
       }
@@ -95,9 +78,7 @@ function aMockFailingHandlerResolver(
   return resolver;
 }
 
-function aMockResolvingErrorHandler(
-  resolveWith?: MyEntity
-): OnErrorHandler<MyEntity, HandlerContext> {
+function aMockResolvingErrorHandler(resolveWith?: MyEntity): OnErrorHandler<MyEntity, HandlerContext> {
   const handler = mockFn<OnErrorHandler<MyEntity, HandlerContext>>();
   handler.mockImplementation((_, entity) => {
     return Promise.resolve(resolveWith || entity);
@@ -106,32 +87,25 @@ function aMockResolvingErrorHandler(
   return handler;
 }
 
-function aMockRejectingErrorHandler(
-  rejectWith?: Error
-): OnErrorHandler<MyEntity, HandlerContext> {
+function aMockRejectingErrorHandler(rejectWith?: Error): OnErrorHandler<MyEntity, HandlerContext> {
   const handler = mockFn<OnErrorHandler<MyEntity, HandlerContext>>();
-  handler.mockImplementation((error) => {
+  handler.mockImplementation(error => {
     return Promise.reject(rejectWith || error);
   });
 
   return handler;
 }
 
-function aMockResolvingBeforeHandler(): OnBeforeHandler<
-  MyEntity,
-  HandlerContext
-> {
+function aMockResolvingBeforeHandler(): OnBeforeHandler<MyEntity, HandlerContext> {
   const handler = mockFn<OnBeforeHandler<MyEntity, HandlerContext>>();
-  handler.mockImplementation((entity) => {
+  handler.mockImplementation(entity => {
     return Promise.resolve(entity);
   });
 
   return handler;
 }
 
-function aMockRejectingBeforeHandler(
-  error: Error
-): OnBeforeHandler<MyEntity, HandlerContext> {
+function aMockRejectingBeforeHandler(error: Error): OnBeforeHandler<MyEntity, HandlerContext> {
   const handler = mockFn<OnBeforeHandler<MyEntity, HandlerContext>>();
   handler.mockImplementation(() => {
     return Promise.reject(error);
@@ -140,10 +114,7 @@ function aMockRejectingBeforeHandler(
   return handler;
 }
 
-function aMockResolvingAfterHandler(): OnAfterHandler<
-  MyEntity,
-  HandlerContext
-> {
+function aMockResolvingAfterHandler(): OnAfterHandler<MyEntity, HandlerContext> {
   const handler = mockFn<OnAfterHandler<MyEntity, HandlerContext>>();
   handler.mockImplementation(() => {
     return Promise.resolve();
@@ -152,9 +123,7 @@ function aMockResolvingAfterHandler(): OnAfterHandler<
   return handler;
 }
 
-function aMockRejectingAfterHandler(
-  error: Error
-): OnAfterHandler<MyEntity, HandlerContext> {
+function aMockRejectingAfterHandler(error: Error): OnAfterHandler<MyEntity, HandlerContext> {
   const handler = mockFn<OnAfterHandler<MyEntity, HandlerContext>>();
   handler.mockImplementation(() => {
     return Promise.reject(error);
@@ -164,7 +133,7 @@ function aMockRejectingAfterHandler(
 }
 
 function aNonRecoverablePipelineError(): NonRecoverablePipelineError {
-  return new NonRecoverablePipelineError(`non-recoverable-${aUUID()}`);
+  return new NonRecoverablePipelineError(`non-recoverable-${uuid()}`);
 }
 
 function anError(): Error {
@@ -193,7 +162,7 @@ export {
   aNonRecoverablePipelineError,
   aMockRejectingHandler,
   aMockRejectingRepository,
-  anError,
+  aHandlerContext,
   aUUID,
-  aHandlerContext
+  anError
 };

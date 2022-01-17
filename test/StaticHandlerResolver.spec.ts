@@ -5,95 +5,63 @@ import { StaticHandlerResolver } from '../lib/StaticHandlerResolver';
 import { NonRecoverablePipelineError } from '../lib/errors';
 import { MyState } from './examples';
 import { aMockHandler } from './mocks';
-import type { HandlerContext } from '../lib/types';
+import type { HandlerContext } from '../lib/spi';
 import type { MyEntity } from './examples';
 
 describe('StaticHandlerResolver', () => {
-  describe('registerDeadState', () => {
+  describe('registerTerminalState', () => {
     test('should throw when called with a state that has already been registered', () => {
-      const resolver = new StaticHandlerResolver<
-        MyEntity,
-        MyState,
-        HandlerContext
-      >();
+      const resolver = new StaticHandlerResolver<MyEntity, MyState, HandlerContext>();
 
       resolver.registerTransition(MyState.A, MyState.B, aMockHandler());
 
-      expect(() => resolver.registerDeadState(MyState.A)).toThrow(
-        AssertionError
-      );
+      expect(() => resolver.registerTerminalState(MyState.A)).toThrow(AssertionError);
     });
 
-    test('should throw when called with a state that is already registered as dead state', () => {
-      const resolver = new StaticHandlerResolver<
-        MyEntity,
-        MyState,
-        HandlerContext
-      >();
+    test('should throw when called with a state that is already registered as terminal state', () => {
+      const resolver = new StaticHandlerResolver<MyEntity, MyState, HandlerContext>();
 
-      resolver.registerDeadState(MyState.A);
+      resolver.registerTerminalState(MyState.A);
 
-      expect(() => resolver.registerDeadState(MyState.A)).toThrow(
-        AssertionError
-      );
+      expect(() => resolver.registerTerminalState(MyState.A)).toThrow(AssertionError);
     });
 
     test('should register a noop handler for the specified state', () => {
-      const resolver = new StaticHandlerResolver<
-        MyEntity,
-        MyState,
-        HandlerContext
-      >();
+      const resolver = new StaticHandlerResolver<MyEntity, MyState, HandlerContext>();
 
-      resolver.registerDeadState(MyState.A);
+      resolver.registerTerminalState(MyState.A);
 
-      expect(resolver.resolveHandlerFor(MyState.A)).toEqual(
-        NoopTransitionHandler
-      );
+      expect(resolver.resolveHandlerFor(MyState.A)).toEqual(NoopTransitionHandler);
     });
   });
 
   describe('registerTransition', () => {
     test('should throw when called with a state that has already been registered', () => {
-      const resolver = new StaticHandlerResolver<
-        MyEntity,
-        MyState,
-        HandlerContext
-      >();
+      const resolver = new StaticHandlerResolver<MyEntity, MyState, HandlerContext>();
 
       resolver.registerTransition(MyState.A, MyState.B, aMockHandler());
 
-      expect(() =>
-        resolver.registerTransition(MyState.A, MyState.Failed, aMockHandler())
-      ).toThrow(AssertionError);
+      expect(() => resolver.registerTransition(MyState.A, MyState.Failed, aMockHandler())).toThrow(AssertionError);
     });
 
-    test('should throw when called with a state that is already registered as dead state', () => {
-      const resolver = new StaticHandlerResolver<
-        MyEntity,
-        MyState,
-        HandlerContext
-      >();
+    test('should throw when called with a state that is already registered as terminal state', () => {
+      const resolver = new StaticHandlerResolver<MyEntity, MyState, HandlerContext>();
 
-      resolver.registerDeadState(MyState.A);
+      resolver.registerTerminalState(MyState.A);
 
-      expect(() =>
-        resolver.registerTransition(MyState.A, MyState.Failed, aMockHandler())
-      ).toThrow(AssertionError);
+      expect(() => resolver.registerTransition(MyState.A, MyState.Failed, aMockHandler())).toThrow(AssertionError);
     });
 
     test(`should register a ${DefaultTransitionHandler.name} to transition from the 'from' to the 'to' state`, () => {
-      const resolver = new StaticHandlerResolver<
-        MyEntity,
-        MyState,
-        HandlerContext
-      >();
+      const resolver = new StaticHandlerResolver<MyEntity, MyState, HandlerContext>();
 
       resolver.registerTransition(MyState.A, MyState.B, aMockHandler());
 
-      const handler = resolver.resolveHandlerFor(
-        MyState.A
-      ) as DefaultTransitionHandler<MyEntity, MyState, HandlerContext>;
+      const handler = resolver.resolveHandlerFor(MyState.A) as DefaultTransitionHandler<
+        MyEntity,
+        MyState,
+        HandlerContext
+      >;
       expect(handler.targetState).toEqual(MyState.B);
     });
   });
@@ -102,17 +70,7 @@ describe('StaticHandlerResolver', () => {
     test('should throw a non recoverable error if no handler is registered with the specified state', () => {
       const resolver = new StaticHandlerResolver();
 
-      expect(() => resolver.resolveHandlerFor(MyState.A)).toThrow(
-        NonRecoverablePipelineError
-      );
-    });
-
-    test('should return a noop handler when none is registered and strict mode is off', () => {
-      const resolver = new StaticHandlerResolver(false);
-
-      expect(resolver.resolveHandlerFor(MyState.A)).toEqual(
-        NoopTransitionHandler
-      );
+      expect(() => resolver.resolveHandlerFor(MyState.A)).toThrow(NonRecoverablePipelineError);
     });
   });
 });

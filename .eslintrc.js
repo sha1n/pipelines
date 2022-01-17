@@ -1,14 +1,7 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: [
-    '@typescript-eslint',
-    'import',
-    'jest',
-    'prettier',
-    'unused-imports',
-    'no-floating-promise'
-  ],
+  plugins: ['@typescript-eslint', 'import', 'jest', 'prettier', 'unused-imports', 'no-floating-promise'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -38,9 +31,15 @@ module.exports = {
     'prettier/prettier': [
       'warn',
       {
-        singleQuote: true,
+        printWidth: 120,
+        tabWidth: 2,
+        tabs: false,
         semi: true,
-        trailingComma: 'none'
+        singleQuote: true,
+        quoteProps: 'as-needed',
+        trailingComma: 'none',
+        bracketSpacing: true,
+        arrowParens: 'avoid'
       }
     ]
   },

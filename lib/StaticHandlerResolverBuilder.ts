@@ -1,25 +1,17 @@
 import { StaticHandlerResolver } from './StaticHandlerResolver';
-import type { HandlerContext, Handler } from './types';
+import type { StatefulPipelineEntity, Handler, HandlerContext } from './spi';
 
-class StaticHandlerResolverBuilder<T, S, C extends HandlerContext> {
-  private readonly resolver: StaticHandlerResolver<T, S, C>;
+class StaticHandlerResolverBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext> {
+  private readonly resolver = new StaticHandlerResolver<T, S, C>();
 
-  constructor(strict?: boolean) {
-    this.resolver = new StaticHandlerResolver<T, S, C>(strict);
-  }
-
-  withTransition(
-    from: S,
-    to: S,
-    through: Handler<T, C>
-  ): StaticHandlerResolverBuilder<T, S, C> {
+  withTransition(from: S, to: S, through: Handler<T, C>): StaticHandlerResolverBuilder<T, S, C> {
     this.resolver.registerTransition(from, to, through);
     return this;
   }
 
-  withDeadStates(...state: S[]): StaticHandlerResolverBuilder<T, S, C> {
-    state.forEach((s) => {
-      this.resolver.registerDeadState(s);
+  withTerminalStates(...state: S[]): StaticHandlerResolverBuilder<T, S, C> {
+    state.forEach(s => {
+      this.resolver.registerTerminalState(s);
     });
     return this;
   }
@@ -29,10 +21,12 @@ class StaticHandlerResolverBuilder<T, S, C extends HandlerContext> {
   }
 }
 
-function createStaticHandlerResolver<T, S, C extends HandlerContext>(
-  strict?: boolean
-): StaticHandlerResolverBuilder<T, S, C> {
-  return new StaticHandlerResolverBuilder(strict);
+function createStaticHandlerResolver<
+  T extends StatefulPipelineEntity<S>,
+  S,
+  C extends HandlerContext
+>(): StaticHandlerResolverBuilder<T, S, C> {
+  return new StaticHandlerResolverBuilder();
 }
 
 export { createStaticHandlerResolver };
