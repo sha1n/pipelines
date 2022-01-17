@@ -4,7 +4,7 @@ import { createStaticHandlerResolver } from '../../lib/StaticHandlerResolverBuil
 import { PipelineDriver } from '../../lib/PipelineDriver';
 import { InMemoryStateRepository } from './InMemoryStateRepository';
 import { Task, TaskContext, TaskState } from './model';
-import { fixedRetryPolicy } from '@sha1n/ontime';
+import { fixedRetryPolicy } from '@sha1n/about-time';
 import { Chance } from 'chance';
 
 describe('PipelineDriver', () => {

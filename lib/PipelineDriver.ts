@@ -1,6 +1,6 @@
 import { StatefulPipelineEntity, HandlerContext } from './types';
 import { Pipeline } from './Pipeline';
-import { retryAround, simpleRetryPolicy, RetryPolicy } from '@sha1n/ontime';
+import { retryAround, simpleRetryPolicy, RetryPolicy } from '@sha1n/about-time';
 
 class PipelineDriver<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext> {
   constructor(
