@@ -19,7 +19,7 @@ const pipeline = createPipeline<Task, TaskState, TaskContext>()
   })
   .withHandlerResolver(
     createStaticHandlerResolver<Task, TaskState, TaskContext>()
-      .withDeadStates(
+      .withTerminalStates(
         TaskState.Completed,
         TaskState.Failed,
         TaskState.Cancelled

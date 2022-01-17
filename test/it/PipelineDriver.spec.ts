@@ -22,11 +22,7 @@ describe('PipelineDriver', () => {
     })
     .withHandlerResolver(
       createStaticHandlerResolver<Task, TaskState, TaskContext>()
-        .withDeadStates(
-          TaskState.Completed,
-          TaskState.Failed,
-          TaskState.Cancelled
-        )
+        .withTerminalStates(TaskState.Completed, TaskState.Failed, TaskState.Cancelled)
         .withTransition(TaskState.Submitted, TaskState.Started, {
           async handle(entity: Task, ctx: TaskContext): Promise<Task> {
             ctx.logger.info('Starting...');
@@ -58,10 +54,7 @@ describe('PipelineDriver', () => {
     const driver = new PipelineDriver(pipeline, fixedRetryPolicy([1]));
     const task = new Task();
 
-    const out = await driver.push(
-      task,
-      new TaskContext(newLogger(`demo:task:run:${task.id}`))
-    );
+    const out = await driver.push(task, new TaskContext(newLogger(`demo:task:run:${task.id}`)));
 
     expect(out.state).toEqual(TaskState.Completed);
   });

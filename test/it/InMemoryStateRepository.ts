@@ -1,25 +1,15 @@
 import { StateRepository } from '../../lib/types';
-import { Task, TaskState, TaskContext } from './model';
+import { Task, TaskContext } from './model';
 
-class InMemoryStateRepository
-  implements StateRepository<Task, TaskState, TaskContext>
-{
+class InMemoryStateRepository implements StateRepository<Task, TaskContext> {
   private readonly tasks = new Map<string, Task>();
 
-  async updateState(
-    entity: Task,
-    state: TaskState,
-    ctx: TaskContext
-  ): Promise<Task> {
-    ctx.logger.info(`Updating task state to ${state}`);
+  async update(entity: Task, ctx: TaskContext): Promise<Task> {
+    ctx.logger.info('Updating task state...');
 
     this.tasks.set(entity.id, entity);
-    entity.state = state;
 
     return entity;
-  }
-  async updateFailed(entity: Task, ctx: TaskContext): Promise<Task> {
-    return this.updateState(entity, TaskState.Failed, ctx);
   }
 }
 

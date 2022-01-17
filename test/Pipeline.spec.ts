@@ -26,7 +26,7 @@ describe('Pipeline', () => {
         .build();
 
       await expect(pipeline.handle(entity, ctx)).resolves.toEqual(entity);
-      expect(repository.updateState).toHaveBeenCalledTimes(0);
+      expect(repository.update).toHaveBeenCalledTimes(0);
     })
   );
 
@@ -40,8 +40,7 @@ describe('Pipeline', () => {
         .build();
 
       await expect(pipeline.handle(entity, ctx)).rejects.toThrow(expectedError);
-      expect(repository.updateFailed).toHaveBeenCalledTimes(0);
-      expect(repository.updateState).toHaveBeenCalledTimes(0);
+      expect(repository.update).toHaveBeenCalledTimes(0);
     })
   );
 
@@ -55,9 +54,8 @@ describe('Pipeline', () => {
         .build();
 
       await expect(pipeline.handle(entity, ctx)).resolves.toEqual(entity);
-      expect(repository.updateState).toHaveBeenCalledTimes(0);
-      expect(repository.updateFailed).toHaveBeenCalledTimes(1);
-      expect(repository.updateFailed).toHaveBeenCalledWith(entity, ctx);
+      expect(repository.update).toHaveBeenCalledTimes(1);
+      expect(repository.update).toHaveBeenCalledWith(entity, ctx);
     })
   );
 
@@ -86,9 +84,8 @@ describe('Pipeline', () => {
         .build();
 
       await expect(pipeline.handle(entity, ctx)).resolves.toEqual(entity);
-      expect(repository.updateState).toHaveBeenCalledTimes(0);
-      expect(repository.updateFailed).toHaveBeenCalledTimes(1);
-      expect(repository.updateFailed).toHaveBeenCalledWith(entity, ctx);
+      expect(repository.update).toHaveBeenCalledTimes(1);
+      expect(repository.update).toHaveBeenCalledWith(entity, ctx);
     })
   );
 
@@ -117,9 +114,8 @@ describe('Pipeline', () => {
         .build();
 
       await expect(pipeline.handle(entity, ctx)).resolves.toEqual(entity);
-      expect(repository.updateState).toHaveBeenCalledTimes(0);
-      expect(repository.updateFailed).toHaveBeenCalledTimes(1);
-      expect(repository.updateFailed).toHaveBeenCalledWith(entity, ctx);
+      expect(repository.update).toHaveBeenCalledTimes(1);
+      expect(repository.update).toHaveBeenCalledWith(entity, ctx);
     })
   );
 
@@ -134,8 +130,7 @@ describe('Pipeline', () => {
 
       await expect(pipeline.handle(entity, ctx)).resolves.toEqual(entity);
 
-      expect(repository.updateState).toHaveBeenCalledTimes(0);
-      expect(repository.updateFailed).toHaveBeenCalledTimes(0);
+      expect(repository.update).toHaveBeenCalledTimes(0);
     })
   );
 
@@ -152,8 +147,7 @@ describe('Pipeline', () => {
 
       await expect(pipeline.handle(entity, ctx)).rejects.toThrow(expectedError);
 
-      expect(repository.updateState).toHaveBeenCalledTimes(0);
-      expect(repository.updateFailed).toHaveBeenCalledTimes(0);
+      expect(repository.update).toHaveBeenCalledTimes(0);
     })
   );
 });
@@ -161,7 +155,7 @@ describe('Pipeline', () => {
 function fixture(
   runTest: (args: {
     entity: MyEntity;
-    repository: StateRepository<MyEntity, MyState, MyContext>;
+    repository: StateRepository<MyEntity, MyContext>;
     ctx: MyContext;
   }) => Promise<void>
 ): () => Promise<void> {

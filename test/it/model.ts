@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { Stateful } from '../../lib/types';
+import { StatefulPipelineEntity } from '../../lib/spi';
 import { Logger } from './logger';
 
 enum TaskState {
@@ -10,12 +10,12 @@ enum TaskState {
   Cancelled
 }
 
-class Task implements Stateful<TaskState> {
+class Task implements StatefulPipelineEntity<TaskState> {
   readonly id: string = uuid();
   state: TaskState = TaskState.Submitted;
 
-  getState(): TaskState {
-    return this.state;
+  setFailedState(): void {
+    this.state = TaskState.Failed;
   }
 }
 
