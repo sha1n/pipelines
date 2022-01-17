@@ -12,13 +12,13 @@ describe('PipelineDriver', () => {
   const expectedError = new Error(chance.string());
   const pipeline = createPipeline<Task, TaskState, TaskContext>()
     .withStateRepository(new InMemoryStateRepository())
-    .withOnBeforeHandler(async (entity, ctx) => {
-      ctx.execCount += 1;
-      ctx.startTime = Date.now();
+    .withOnBeforeHandler(async (entity /*, ctx*/) => {
+      entity.execCount += 1;
+      entity.startTime = Date.now();
       return entity;
     })
-    .withOnAfterHandler(async (entity, ctx) => {
-      ctx.elapsedTime = Date.now() - ctx.startTime;
+    .withOnAfterHandler(async (entity /*, ctx*/) => {
+      entity.elapsedTime = Date.now() - entity.startTime;
     })
     .withHandlerResolver(
       createStaticHandlerResolver<Task, TaskState, TaskContext>()
@@ -31,7 +31,7 @@ describe('PipelineDriver', () => {
         })
         .withTransition(TaskState.Started, TaskState.Completed, {
           async handle(entity: Task, ctx: TaskContext): Promise<Task> {
-            if (ctx.execCount < 3) {
+            if (entity.execCount < 3) {
               throw expectedError;
             }
             ctx.logger.info('Completing...');
@@ -45,16 +45,17 @@ describe('PipelineDriver', () => {
   test('should fail if a handler fails', async () => {
     const driver = new PipelineDriver(pipeline);
     const task = new Task();
-    const ctx = new TaskContext(newLogger(`demo:task:run:${task.id}`));
+    const logger = newLogger(`demo:task:run:${task.id}`);
 
-    await expect(driver.push(task, ctx)).rejects.toThrow(expectedError);
+    await expect(driver.push(task, { logger })).rejects.toThrow(expectedError);
   });
 
   test('should retry when provided with a retry policy and drive the task through to completion', async () => {
     const driver = new PipelineDriver(pipeline, fixedRetryPolicy([1]));
     const task = new Task();
+    const logger = newLogger(`demo:task:run:${task.id}`);
 
-    const out = await driver.push(task, new TaskContext(newLogger(`demo:task:run:${task.id}`)));
+    const out = await driver.push(task, { logger });
 
     expect(out.state).toEqual(TaskState.Completed);
   });

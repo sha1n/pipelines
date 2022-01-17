@@ -12,6 +12,9 @@ enum TaskState {
 
 class Task implements StatefulPipelineEntity<TaskState> {
   readonly id: string = uuid();
+  execCount = 0;
+  startTime?: number;
+  elapsedTime?: number;
   state: TaskState = TaskState.Submitted;
 
   setFailedState(): void {
@@ -19,12 +22,8 @@ class Task implements StatefulPipelineEntity<TaskState> {
   }
 }
 
-class TaskContext {
-  execCount = 0;
-  startTime?: number;
-  elapsedTime?: number;
-
-  constructor(readonly logger: Logger) {}
-}
+type TaskContext = {
+  readonly logger: Logger;
+};
 
 export { Task, TaskState, TaskContext };
