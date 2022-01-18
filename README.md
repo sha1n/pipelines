@@ -12,7 +12,7 @@
 ## Usage Example
 ```ts
 // Building a pipeline for a task
-  const pipeline = createPipeline<Task, TaskState, TaskContext>()
+  const pipeline = createPipelineBuilder<Task, TaskState, TaskContext>()
     .withStateRepository(new InMemoryStateRepository())
     .withOnBeforeHandler(async (entity /*, ctx*/) => {
       entity.execCount += 1;
@@ -23,7 +23,7 @@
       entity.elapsedTime = Date.now() - entity.startTime;
     })
     .withTransitionResolver(
-      createTransitionResolver<Task, TaskState, TaskContext>()
+      createTransitionResolverBuilder<Task, TaskState, TaskContext>()
         .withTerminalStates(TaskState.Completed, TaskState.Failed, TaskState.Cancelled)
         .withTransition(TaskState.Submitted, TaskState.Started, {
           async handle(entity: Task, ctx: TaskContext): Promise<Task> {

@@ -1,6 +1,6 @@
 import { newLogger } from './logger';
-import { createPipeline } from '../../lib/PipelineBuilder';
-import { createTransitionResolver } from '../../lib/spi/StaticTransitionResolverBuilder';
+import { createPipelineBuilder } from '../../lib/PipelineBuilder';
+import { createTransitionResolverBuilder } from '../../lib/spi/StaticTransitionResolverBuilder';
 import { PipelineDriver } from '../../lib/PipelineDriver';
 import { InMemoryStateRepository } from './InMemoryStateRepository';
 import { Task, TaskContext, TaskState } from './model';
@@ -10,7 +10,7 @@ import { Chance } from 'chance';
 describe('PipelineDriver', () => {
   const chance = new Chance();
   const expectedError = new Error(chance.string());
-  const pipeline = createPipeline<Task, TaskState, TaskContext>()
+  const pipeline = createPipelineBuilder<Task, TaskState, TaskContext>()
     .withStateRepository(new InMemoryStateRepository())
     .withOnBeforeHandler(async (entity /*, ctx*/) => {
       entity.execCount += 1;
@@ -21,7 +21,7 @@ describe('PipelineDriver', () => {
       entity.elapsedTime = Date.now() - entity.startTime;
     })
     .withTransitionResolver(
-      createTransitionResolver<Task, TaskState, TaskContext>()
+      createTransitionResolverBuilder<Task, TaskState, TaskContext>()
         .withTerminalStates(TaskState.Completed, TaskState.Failed, TaskState.Cancelled)
         .withTransition(TaskState.Submitted, TaskState.Started, {
           async handle(entity: Task, ctx: TaskContext): Promise<Task> {

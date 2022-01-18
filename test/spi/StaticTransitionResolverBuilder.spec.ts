@@ -1,4 +1,4 @@
-import { createTransitionResolver } from '../../lib/spi/StaticTransitionResolverBuilder';
+import { createTransitionResolverBuilder } from '../../lib/spi/StaticTransitionResolverBuilder';
 import { Terminal } from '../../lib/spi/types';
 import { MyEntity, MyState } from '../examples';
 import { aMockHandler } from '../mocks';
@@ -7,7 +7,7 @@ import type { HandlerContext } from '../../lib/types';
 
 describe('StaticTransitionResolverBuilder', () => {
   test('should build', () => {
-    const resolver = createTransitionResolver()
+    const resolver = createTransitionResolverBuilder()
       .withTransition(MyState.A, MyState.Completed, aMockHandler())
       .withTerminalStates(MyState.Failed, MyState.Completed)
       .build();
