@@ -1,4 +1,4 @@
-import { createPipeline } from '../lib/PipelineBuilder';
+import { createPipelineBuilder } from '../lib/PipelineBuilder';
 import { MyEntity } from './examples';
 import {
   aMockFailingHandlerResolver,
@@ -20,7 +20,7 @@ describe('Pipeline', () => {
   test(
     'should resolve with successful handler result',
     fixture(async ({ entity, repository, ctx }) => {
-      const pipeline = createPipeline()
+      const pipeline = createPipelineBuilder()
         .withStateRepository(repository)
         .withTransitionResolver(aMockHandlerResolver())
         .build();
@@ -35,7 +35,7 @@ describe('Pipeline', () => {
     'should reject with handler error',
     fixture(async ({ entity, repository, ctx }) => {
       const expectedError = anError();
-      const pipeline = createPipeline()
+      const pipeline = createPipelineBuilder()
         .withStateRepository(repository)
         .withTransitionResolver(aMockFailingHandlerResolver(expectedError))
         .build();
@@ -49,7 +49,7 @@ describe('Pipeline', () => {
     'should resolve and fall to failed state when a non-recoverable error is thrown by the handler',
     fixture(async ({ entity, repository, ctx }) => {
       const expectedError = aNonRecoverablePipelineError();
-      const pipeline = createPipeline()
+      const pipeline = createPipelineBuilder()
         .withStateRepository(repository)
         .withTransitionResolver(aMockFailingHandlerResolver(expectedError))
         .build();
@@ -64,7 +64,7 @@ describe('Pipeline', () => {
     'should reject with before handler error',
     fixture(async ({ entity, repository, ctx }) => {
       const expectedError = anError();
-      const pipeline = createPipeline<MyEntity, MyState, MyContext>()
+      const pipeline = createPipelineBuilder<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
         .withTransitionResolver(aMockHandlerResolver())
         .withOnBeforeHandler(aMockRejectingBeforeHandler(expectedError))
@@ -78,7 +78,7 @@ describe('Pipeline', () => {
     'should resolve and fall to failed state when a non-recoverable error is thrown by the before handler',
     fixture(async ({ entity, repository, ctx }) => {
       const expectedError = aNonRecoverablePipelineError();
-      const pipeline = createPipeline<MyEntity, MyState, MyContext>()
+      const pipeline = createPipelineBuilder<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
         .withTransitionResolver(aMockHandlerResolver())
         .withOnBeforeHandler(aMockRejectingBeforeHandler(expectedError))
@@ -94,7 +94,7 @@ describe('Pipeline', () => {
     'should reject with after handler error',
     fixture(async ({ entity, repository, ctx }) => {
       const expectedError = anError();
-      const pipeline = createPipeline<MyEntity, MyState, MyContext>()
+      const pipeline = createPipelineBuilder<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
         .withTransitionResolver(aMockHandlerResolver())
         .withOnAfterHandler(aMockRejectingAfterHandler(expectedError))
@@ -108,7 +108,7 @@ describe('Pipeline', () => {
     'should resolve and fall to failed state when a non-recoverable error is thrown by the after handler',
     fixture(async ({ entity, repository, ctx }) => {
       const expectedError = aNonRecoverablePipelineError();
-      const pipeline = createPipeline<MyEntity, MyState, MyContext>()
+      const pipeline = createPipelineBuilder<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
         .withTransitionResolver(aMockHandlerResolver())
         .withOnAfterHandler(aMockRejectingAfterHandler(expectedError))
@@ -123,7 +123,7 @@ describe('Pipeline', () => {
   test(
     'should call custom error handler and reflect its resolution',
     fixture(async ({ entity, repository, ctx }) => {
-      const pipeline = createPipeline<MyEntity, MyState, MyContext>()
+      const pipeline = createPipelineBuilder<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
         .withTransitionResolver(aMockFailingHandlerResolver(anError()))
         .withErrorHandler(aMockResolvingErrorHandler(entity))
@@ -140,7 +140,7 @@ describe('Pipeline', () => {
     fixture(async ({ entity, repository, ctx }) => {
       const handlerError = aNonRecoverablePipelineError();
       const expectedError = aNonRecoverablePipelineError();
-      const pipeline = createPipeline<MyEntity, MyState, MyContext>()
+      const pipeline = createPipelineBuilder<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
         .withTransitionResolver(aMockFailingHandlerResolver(handlerError))
         .withErrorHandler(aMockRejectingErrorHandler(expectedError))

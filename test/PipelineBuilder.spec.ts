@@ -1,6 +1,6 @@
 import { AssertionError } from 'assert';
 import { mock } from 'jest-mock-extended';
-import { createPipeline } from '../lib/PipelineBuilder';
+import { createPipelineBuilder } from '../lib/PipelineBuilder';
 import { MyEntity } from './examples';
 import {
   aMockFailingHandlerResolver,
@@ -19,7 +19,7 @@ describe('PipelineBuilder', () => {
   describe('should throw', () => {
     test('when no handler resolver is specified', () => {
       const buildWithoutResolver = () =>
-        createPipeline<MyEntity, MyState, HandlerContext>()
+        createPipelineBuilder<MyEntity, MyState, HandlerContext>()
           .withStateRepository(mock<StateRepository<MyEntity, HandlerContext>>())
           .withErrorHandler((err, entity) => Promise.resolve(entity))
           .build();
@@ -30,7 +30,7 @@ describe('PipelineBuilder', () => {
 
     test('when no repository is specified', () => {
       const buildWithoutRepository = () =>
-        createPipeline<MyEntity, MyState, HandlerContext>()
+        createPipelineBuilder<MyEntity, MyState, HandlerContext>()
           .withTransitionResolver(mock<TransitionResolver<MyEntity, MyState, HandlerContext>>())
           .withErrorHandler((err, entity) => Promise.resolve(entity))
           .build();
@@ -49,7 +49,7 @@ describe('PipelineBuilder', () => {
     const context = mock<HandlerContext>();
 
     const build = () =>
-      createPipeline<MyEntity, MyState, HandlerContext>()
+      createPipelineBuilder<MyEntity, MyState, HandlerContext>()
         .withStateRepository(mockRepository)
         .withTransitionResolver(mockHandlerResolver)
         .withOnBeforeHandler(mockResolvingBeforeHandler)
@@ -73,7 +73,7 @@ describe('PipelineBuilder', () => {
     const context = mock<HandlerContext>();
 
     const build = () =>
-      createPipeline<MyEntity, MyState, HandlerContext>()
+      createPipelineBuilder<MyEntity, MyState, HandlerContext>()
         .withStateRepository(aMockRepository())
         .withTransitionResolver(aMockFailingHandlerResolver(expectedError))
         .withErrorHandler(mockErrorHandler)

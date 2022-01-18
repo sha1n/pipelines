@@ -21,7 +21,7 @@ class StaticTransitionResolverBuilder<T extends StatefulPipelineEntity<S>, S, C 
   }
 }
 
-function createTransitionResolver<
+function createTransitionResolverBuilder<
   T extends StatefulPipelineEntity<S>,
   S,
   C extends HandlerContext
@@ -29,4 +29,4 @@ function createTransitionResolver<
   return new StaticTransitionResolverBuilder();
 }
 
-export { createTransitionResolver };
+export { createTransitionResolverBuilder };

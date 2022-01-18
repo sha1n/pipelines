@@ -56,8 +56,12 @@ class PipelineBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerC
   }
 }
 
-function createPipeline<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>(): PipelineBuilder<T, S, C> {
+function createPipelineBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>(): PipelineBuilder<
+  T,
+  S,
+  C
+> {
   return new PipelineBuilder<T, S, C>();
 }
 
-export { createPipeline };
+export { createPipelineBuilder };
