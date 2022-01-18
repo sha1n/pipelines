@@ -1,11 +1,12 @@
 import { NonRecoverablePipelineError } from './errors';
-import type { HandlerResolver } from './spi';
+import { Terminal } from './spi/types';
+import type { TransitionRecord, TransitionResolver } from './spi/types';
 import type {
-  StatefulPipelineEntity,
   HandlerContext,
   OnAfterHandler,
   OnBeforeHandler,
   OnErrorHandler,
+  StatefulPipelineEntity,
   StateRepository
 } from './types';
 
@@ -15,7 +16,7 @@ class Pipeline<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>
   private readonly onAfter: OnAfterHandler<T, C>;
 
   constructor(
-    private readonly handlerResolver: HandlerResolver<T, S, C>,
+    private readonly transitionResolver: TransitionResolver<T, S, C>,
     private readonly stateRepository: StateRepository<T, C>,
     onError?: OnErrorHandler<T, C>,
     onBefore?: OnBeforeHandler<T, C>,
@@ -27,12 +28,21 @@ class Pipeline<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>
   }
 
   async handle(entity: T, ctx: C): Promise<T> {
-    const handler = this.handlerResolver.resolveHandlerFor(entity.state);
-
     try {
-      const maybeModified = await this.onBefore(entity, ctx);
-      const modifiedEntity = await handler.handle(maybeModified, this.stateRepository, ctx);
-      await this.onAfter(modifiedEntity, ctx);
+      let modifiedEntity = await this.onBefore(entity, ctx);
+
+      const mappingOrTerminal = this.transitionResolver.resolveTransitionFrom(entity, ctx);
+
+      if (mappingOrTerminal !== Terminal) {
+        const { targetState, handler } = mappingOrTerminal as TransitionRecord<T, S, C>;
+
+        modifiedEntity = await handler.handle(modifiedEntity, ctx);
+
+        modifiedEntity.state = targetState;
+        modifiedEntity = await this.stateRepository.update(modifiedEntity, ctx);
+
+        await this.onAfter(modifiedEntity, ctx);
+      }
 
       return modifiedEntity;
     } catch (e) {

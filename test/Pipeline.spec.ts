@@ -14,7 +14,7 @@ import {
   aHandlerContext
 } from './mocks';
 import type { StateRepository } from '../lib/types';
-import type { MyState, MyContext } from './examples';
+import type { MyContext, MyState } from './examples';
 
 describe('Pipeline', () => {
   test(
@@ -22,11 +22,12 @@ describe('Pipeline', () => {
     fixture(async ({ entity, repository, ctx }) => {
       const pipeline = createPipeline()
         .withStateRepository(repository)
-        .withHandlerResolver(aMockHandlerResolver())
+        .withTransitionResolver(aMockHandlerResolver())
         .build();
 
       await expect(pipeline.handle(entity, ctx)).resolves.toEqual(entity);
-      expect(repository.update).toHaveBeenCalledTimes(0);
+      expect(repository.update).toHaveBeenCalledTimes(1);
+      expect(repository.update).toHaveBeenCalledWith(entity, ctx);
     })
   );
 
@@ -36,7 +37,7 @@ describe('Pipeline', () => {
       const expectedError = anError();
       const pipeline = createPipeline()
         .withStateRepository(repository)
-        .withHandlerResolver(aMockFailingHandlerResolver(expectedError))
+        .withTransitionResolver(aMockFailingHandlerResolver(expectedError))
         .build();
 
       await expect(pipeline.handle(entity, ctx)).rejects.toThrow(expectedError);
@@ -50,7 +51,7 @@ describe('Pipeline', () => {
       const expectedError = aNonRecoverablePipelineError();
       const pipeline = createPipeline()
         .withStateRepository(repository)
-        .withHandlerResolver(aMockFailingHandlerResolver(expectedError))
+        .withTransitionResolver(aMockFailingHandlerResolver(expectedError))
         .build();
 
       await expect(pipeline.handle(entity, ctx)).resolves.toEqual(entity);
@@ -65,7 +66,7 @@ describe('Pipeline', () => {
       const expectedError = anError();
       const pipeline = createPipeline<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
-        .withHandlerResolver(aMockHandlerResolver())
+        .withTransitionResolver(aMockHandlerResolver())
         .withOnBeforeHandler(aMockRejectingBeforeHandler(expectedError))
         .build();
 
@@ -79,7 +80,7 @@ describe('Pipeline', () => {
       const expectedError = aNonRecoverablePipelineError();
       const pipeline = createPipeline<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
-        .withHandlerResolver(aMockHandlerResolver())
+        .withTransitionResolver(aMockHandlerResolver())
         .withOnBeforeHandler(aMockRejectingBeforeHandler(expectedError))
         .build();
 
@@ -95,7 +96,7 @@ describe('Pipeline', () => {
       const expectedError = anError();
       const pipeline = createPipeline<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
-        .withHandlerResolver(aMockHandlerResolver())
+        .withTransitionResolver(aMockHandlerResolver())
         .withOnAfterHandler(aMockRejectingAfterHandler(expectedError))
         .build();
 
@@ -109,12 +110,12 @@ describe('Pipeline', () => {
       const expectedError = aNonRecoverablePipelineError();
       const pipeline = createPipeline<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
-        .withHandlerResolver(aMockHandlerResolver())
+        .withTransitionResolver(aMockHandlerResolver())
         .withOnAfterHandler(aMockRejectingAfterHandler(expectedError))
         .build();
 
       await expect(pipeline.handle(entity, ctx)).resolves.toEqual(entity);
-      expect(repository.update).toHaveBeenCalledTimes(1);
+      expect(repository.update).toHaveBeenCalledTimes(2 /* once to update the state and once to set failed */);
       expect(repository.update).toHaveBeenCalledWith(entity, ctx);
     })
   );
@@ -124,7 +125,7 @@ describe('Pipeline', () => {
     fixture(async ({ entity, repository, ctx }) => {
       const pipeline = createPipeline<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
-        .withHandlerResolver(aMockFailingHandlerResolver(anError()))
+        .withTransitionResolver(aMockFailingHandlerResolver(anError()))
         .withErrorHandler(aMockResolvingErrorHandler(entity))
         .build();
 
@@ -141,7 +142,7 @@ describe('Pipeline', () => {
       const expectedError = aNonRecoverablePipelineError();
       const pipeline = createPipeline<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
-        .withHandlerResolver(aMockFailingHandlerResolver(handlerError))
+        .withTransitionResolver(aMockFailingHandlerResolver(handlerError))
         .withErrorHandler(aMockRejectingErrorHandler(expectedError))
         .build();
 

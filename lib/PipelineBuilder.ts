@@ -1,10 +1,10 @@
 import assert from 'assert';
 import { Pipeline } from './Pipeline';
-import type { HandlerResolver } from './spi';
+import type { TransitionResolver } from './spi/types';
 import type {
+  OnErrorHandler,
   StatefulPipelineEntity,
   HandlerContext,
-  OnErrorHandler,
   StateRepository,
   OnBeforeHandler,
   OnAfterHandler
@@ -12,7 +12,7 @@ import type {
 
 class PipelineBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext> {
   private repository: StateRepository<T, C>;
-  private resolver: HandlerResolver<T, S, C>;
+  private resolver: TransitionResolver<T, S, C>;
   private onErrorHandler: OnErrorHandler<T, C>;
   private onBeforeHandler: OnBeforeHandler<T, C>;
   private onAfterHandler: OnAfterHandler<T, C>;
@@ -22,7 +22,7 @@ class PipelineBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerC
     return this;
   }
 
-  withHandlerResolver(resolver: HandlerResolver<T, S, C>): PipelineBuilder<T, S, C> {
+  withTransitionResolver(resolver: TransitionResolver<T, S, C>): PipelineBuilder<T, S, C> {
     this.resolver = resolver;
     return this;
   }

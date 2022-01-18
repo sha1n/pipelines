@@ -35,11 +35,11 @@ type OnBeforeHandler<T, C extends HandlerContext> = (entity: T, ctx: C) => Promi
 type OnAfterHandler<T, C extends HandlerContext> = (entity: T, ctx: C) => Promise<void>;
 
 export {
+  StatefulPipelineEntity,
+  Handler,
   OnErrorHandler,
   OnBeforeHandler,
   OnAfterHandler,
   HandlerContext,
-  StateRepository,
-  StatefulPipelineEntity,
-  Handler
+  StateRepository
 };
