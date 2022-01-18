@@ -1,10 +1,10 @@
 import { newLogger } from './logger';
 import { createPipeline } from '../../lib/PipelineBuilder';
-import { createStaticHandlerResolver } from '../../lib/StaticHandlerResolverBuilder';
+import { createTransitionResolver } from '../../lib/spi/StaticTransitionResolverBuilder';
 import { PipelineDriver } from '../../lib/PipelineDriver';
 import { InMemoryStateRepository } from './InMemoryStateRepository';
 import { Task, TaskContext, TaskState } from './model';
-import { fixedRetryPolicy } from '@sha1n/ontime';
+import { fixedRetryPolicy } from '@sha1n/about-time';
 import { Chance } from 'chance';
 
 describe('PipelineDriver', () => {
@@ -20,8 +20,8 @@ describe('PipelineDriver', () => {
     .withOnAfterHandler(async (entity /*, ctx*/) => {
       entity.elapsedTime = Date.now() - entity.startTime;
     })
-    .withHandlerResolver(
-      createStaticHandlerResolver<Task, TaskState, TaskContext>()
+    .withTransitionResolver(
+      createTransitionResolver<Task, TaskState, TaskContext>()
         .withTerminalStates(TaskState.Completed, TaskState.Failed, TaskState.Cancelled)
         .withTransition(TaskState.Submitted, TaskState.Started, {
           async handle(entity: Task, ctx: TaskContext): Promise<Task> {

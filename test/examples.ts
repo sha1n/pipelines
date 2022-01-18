@@ -8,8 +8,9 @@ enum MyState {
 }
 
 class MyEntity implements StatefulPipelineEntity<MyState> {
-  state: MyState = MyState.A;
   evidence: string[] = [];
+
+  constructor(public state: MyState = MyState.A) {}
 
   setFailedState(): void {
     this.state = MyState.Failed;

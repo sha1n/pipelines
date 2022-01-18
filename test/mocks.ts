@@ -1,16 +1,17 @@
 import { v4 as uuid } from 'uuid';
 import { mock, mockFn } from 'jest-mock-extended';
 import { NonRecoverablePipelineError } from '../lib/errors';
-import type { HandlerResolver, TransitionHandler } from '../lib/spi';
+import { MyState } from './examples';
+import type { TransitionResolver } from '../lib/spi/types';
 import type {
   Handler,
   HandlerContext,
-  OnErrorHandler,
-  StateRepository,
+  OnAfterHandler,
   OnBeforeHandler,
-  OnAfterHandler
+  OnErrorHandler,
+  StateRepository
 } from '../lib/types';
-import type { MyEntity, MyState } from './examples';
+import type { MyEntity } from './examples';
 
 function aMockHandler(): Handler<MyEntity, HandlerContext> {
   const handler = mock<Handler<MyEntity, HandlerContext>>();
@@ -52,26 +53,32 @@ function aMockRejectingRepository(error: Error): StateRepository<MyEntity, Handl
   return repo;
 }
 
-function aMockHandlerResolver(): HandlerResolver<MyEntity, MyState, HandlerContext> {
-  const resolver = mock<HandlerResolver<MyEntity, MyState, HandlerContext>>();
-  resolver.resolveHandlerFor.mockImplementation(() => {
-    return <TransitionHandler<MyEntity, HandlerContext>>{
-      handle(entity: MyEntity): Promise<MyEntity> {
-        return Promise.resolve(entity);
-      }
+function aMockHandlerResolver(): TransitionResolver<MyEntity, MyState, HandlerContext> {
+  const resolver = mock<TransitionResolver<MyEntity, MyState, HandlerContext>>();
+  resolver.resolveTransitionFrom.mockImplementation(() => {
+    return {
+      handler: <Handler<MyEntity, HandlerContext>>{
+        handle(entity: MyEntity): Promise<MyEntity> {
+          return Promise.resolve(entity);
+        }
+      },
+      targetState: MyState.Completed
     };
   });
 
   return resolver;
 }
 
-function aMockFailingHandlerResolver(error: Error): HandlerResolver<MyEntity, MyState, HandlerContext> {
-  const resolver = mock<HandlerResolver<MyEntity, MyState, HandlerContext>>();
-  resolver.resolveHandlerFor.mockImplementation(() => {
-    return <TransitionHandler<MyEntity, HandlerContext>>{
-      handle(): Promise<MyEntity> {
-        return Promise.reject(error);
-      }
+function aMockFailingHandlerResolver(error: Error): TransitionResolver<MyEntity, MyState, HandlerContext> {
+  const resolver = mock<TransitionResolver<MyEntity, MyState, HandlerContext>>();
+  resolver.resolveTransitionFrom.mockImplementation(() => {
+    return {
+      handler: <Handler<MyEntity, HandlerContext>>{
+        handle(): Promise<MyEntity> {
+          return Promise.reject(error);
+        }
+      },
+      targetState: MyState.Completed
     };
   });
 

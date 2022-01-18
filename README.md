@@ -22,8 +22,8 @@
     .withOnAfterHandler(async (entity /*, ctx*/) => {
       entity.elapsedTime = Date.now() - entity.startTime;
     })
-    .withHandlerResolver(
-      createStaticHandlerResolver<Task, TaskState, TaskContext>()
+    .withTransitionResolver(
+      createTransitionResolver<Task, TaskState, TaskContext>()
         .withTerminalStates(TaskState.Completed, TaskState.Failed, TaskState.Cancelled)
         .withTransition(TaskState.Submitted, TaskState.Started, {
           async handle(entity: Task, ctx: TaskContext): Promise<Task> {
