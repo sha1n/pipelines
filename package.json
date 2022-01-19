@@ -1,8 +1,8 @@
 {
-  "name": "@sha1n/pipeline",
+  "name": "@sha1n/pipelines",
   "version": "0.0.1",
   "description": "A mini-framework for multi-stage pipeline execution",
-  "repository": "https://github.com/sha1n/pipeline",
+  "repository": "https://github.com/sha1n/pipelines",
   "author": "Shai Nagar",
   "license": "MIT",
   "types": "./dist/types",
