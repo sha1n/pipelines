@@ -9,14 +9,11 @@ class StaticTransitionResolverBuilder<T extends StatefulPipelineEntity<S>, S, C 
     to: S,
     through: Handler<T, C> | ((entity: T, ctx: C) => Promise<T>)
   ): StaticTransitionResolverBuilder<T, S, C> {
+    // eslint-disable-next-line prettier/prettier
     this.resolver.registerTransition(
-      from,
-      to,
-      typeof through === 'function'
-        ? {
-            handle: through
-          }
-        : through
+      from, 
+      to, 
+      typeof through === 'function' ? { handle: through } : through
     );
     return this;
   }
