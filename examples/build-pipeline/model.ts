@@ -1,7 +1,7 @@
 import { TimeUnit } from '@sha1n/about-time/dist/types';
 import { v4 as uuid } from 'uuid';
 import { StatefulPipelineEntity } from '../../lib/types';
-import { Logger } from '../in-memory-repository/logger';
+import { Logger } from '../logger';
 
 enum BuildState {
   Initiated = 'Build Initiated',

@@ -4,7 +4,7 @@ import os from 'os';
 import { createPipelineBuilder } from '../../lib/PipelineBuilder';
 import { PipelineDriver } from '../../lib/PipelineDriver';
 import { createTransitionResolverBuilder } from '../../lib/spi/StaticTransitionResolverBuilder';
-import { newLogger } from '../in-memory-repository/logger';
+import { newLogger } from '../logger';
 import { BuildContext, BuildState, BuildTask } from './model';
 import { Repository } from './Repository';
 import { execute } from './shell';

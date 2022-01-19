@@ -16,7 +16,7 @@
     "lint": "eslint --fix --ext .js,.ts .",
     "posttest": "yarn run lint",
     "prepublish": "yarn run build",
-    "demo": "DEBUG=info:build* ts-node ./examples/build-pipeline/index.ts"
+    "demo": "ts-node ./examples/build-pipeline/index.ts"
   },
   "dependencies": {
     "@sha1n/about-time": "^0.0.1",
