@@ -4,14 +4,14 @@ import { StatefulPipelineEntity } from '../../lib/types';
 import { Logger } from '../in-memory-repository/logger';
 
 enum BuildState {
-  Initiated,
-  WorkspaceSetup,
-  InstallCompleted,
-  BuildCompleted,
-  TestCompleted,
-  Completed,
-  Failed,
-  Cancelled
+  Initiated = 'Build Initiated',
+  WorkspaceSetup = 'Workspace Setup',
+  InstallCompleted = 'Package(s) Installed',
+  BuildCompleted = 'Build Complete',
+  TestCompleted = 'Tests Complete',
+  Completed = 'Completed',
+  Failed = 'Failed',
+  Cancelled = 'Cancelled'
 }
 
 class BuildTask implements StatefulPipelineEntity<BuildState> {

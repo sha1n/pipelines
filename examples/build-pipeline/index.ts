@@ -1,4 +1,6 @@
-import { stopwatch, TimeUnit } from '@sha1n/about-time';
+import { stopwatch, TimeUnit, retryAround, exponentialBackoffRetryPolicy } from '@sha1n/about-time';
+import path from 'path/posix';
+import os from 'os';
 import { createPipelineBuilder } from '../../lib/PipelineBuilder';
 import { PipelineDriver } from '../../lib/PipelineDriver';
 import { createTransitionResolverBuilder } from '../../lib/spi/StaticTransitionResolverBuilder';
@@ -8,17 +10,19 @@ import { Repository } from './Repository';
 import { execute } from './shell';
 
 async function cleanup(ctx: BuildContext) {
-  await execute('rm', ['-rf', ctx.workspaceDir]);
+  ctx.logger.info(`🧹 Deleting workspace: ${ctx.workspaceDir}...`);
+  await retryAround(() => execute('rm', ['-rf', ctx.workspaceDir]), exponentialBackoffRetryPolicy(2));
+  ctx.logger.info('Workspace deleted!');
 }
 
 const pipeline = createPipelineBuilder<BuildTask, BuildState, BuildContext>()
   .withStateRepository(new Repository())
   .withOnBeforeHandler(async (task, ctx) => {
-    ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: Processing state: ${task.state}`);
+    ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: Going to handle state: ${task.state}`);
     return task;
   })
   .withOnAfterHandler(async (e, ctx) => {
-    ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: Complete`);
+    ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: State is now ${task.state}`);
   })
   .withErrorHandler(async (error: Error, task: BuildTask, ctx: BuildContext) => {
     ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: Build failed!`);
@@ -54,7 +58,7 @@ const pipeline = createPipelineBuilder<BuildTask, BuildState, BuildContext>()
       })
       .withTransition(BuildState.TestCompleted, BuildState.Completed, {
         async handle(entity: BuildTask, ctx: BuildContext): Promise<BuildTask> {
-          await execute('echo', ['Build pipeline finished successfully! 🥳 🎉']);
+          await execute('echo', ['🥳 🎉 Build pipeline finished successfully!']);
           await cleanup(ctx);
           return entity;
         }
@@ -65,12 +69,13 @@ const pipeline = createPipelineBuilder<BuildTask, BuildState, BuildContext>()
 
 const driver = new PipelineDriver(pipeline);
 const task = new BuildTask('git@github.com:sha1n/pipelines.git');
+const wsBasePath = path.join(os.tmpdir(), 'build-pipelines');
 const ctx = <BuildContext>{
-  workspaceDir: `/tmp/build-pipelines/${task.id}/`,
+  workspaceDir: path.join(wsBasePath, task.id),
   elapsed: stopwatch(),
-  logger: newLogger(`build-${task.id}`)
+  logger: newLogger(`build:${task.id}`)
 };
 
 driver.push(task, ctx).finally(() => {
-  execute('rm', ['-rf', '/tmp/build-pipelines']); // just to be clean
+  execute('rm', ['-rf', wsBasePath]); // just to be clean
 });
