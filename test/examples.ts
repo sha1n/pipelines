@@ -3,6 +3,7 @@ import type { StatefulPipelineEntity, HandlerContext } from '../lib/types';
 enum MyState {
   A,
   B,
+  C,
   Completed,
   Failed
 }
