@@ -9,6 +9,15 @@ class StaticTransitionResolverBuilder<T extends StatefulPipelineEntity<S>, S, C 
     return this;
   }
 
+  withPassthrough(from: S, to: S): StaticTransitionResolverBuilder<T, S, C> {
+    this.resolver.registerTransition(from, to, {
+      handle(entity) {
+        return Promise.resolve(entity);
+      }
+    });
+    return this;
+  }
+
   withTerminalStates(...state: S[]): StaticTransitionResolverBuilder<T, S, C> {
     state.forEach(s => {
       this.resolver.registerTerminalState(s);
