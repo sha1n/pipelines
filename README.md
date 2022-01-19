@@ -1,11 +1,10 @@
-[![CI](https://github.com/sha1n/pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/sha1n/pipeline/actions/workflows/ci.yml)
-[![Coverage](https://github.com/sha1n/pipeline/actions/workflows/coverage.yml/badge.svg)](https://github.com/sha1n/pipeline/actions/workflows/coverage.yml)
-![GitHub](https://img.shields.io/github/license/sha1n/pipeline)
-<!-- 
-![npm type definitions](https://img.shields.io/npm/types/@sha1n/pipeline)
-![npm](https://img.shields.io/npm/v/@sha1n/pipeline)
--->
-# pipeline
+[![CI](https://github.com/sha1n/pipelines/actions/workflows/ci.yml/badge.svg)](https://github.com/sha1n/pipelines/actions/workflows/ci.yml)
+[![Coverage](https://github.com/sha1n/pipelines/actions/workflows/coverage.yml/badge.svg)](https://github.com/sha1n/pipelines/actions/workflows/coverage.yml)
+![GitHub](https://img.shields.io/github/license/sha1n/pipelines)
+![npm type definitions](https://img.shields.io/npm/types/@sha1n/pipelines)
+![npm](https://img.shields.io/npm/v/@sha1n/pipelines)
+
+# pipelines
 
 **Not published to the public npm registry at this point.**
 
