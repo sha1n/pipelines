@@ -1,9 +1,9 @@
-import { newLogger } from './logger';
-import { createPipelineBuilder } from '../../lib/PipelineBuilder';
-import { createTransitionResolverBuilder } from '../../lib/spi/StaticTransitionResolverBuilder';
-import { PipelineDriver } from '../../lib/PipelineDriver';
-import { InMemoryStateRepository } from './InMemoryStateRepository';
-import { Task, TaskContext, TaskState } from './model';
+import { newLogger } from '../examples/in-memory-repository/logger';
+import { createPipelineBuilder } from '../lib/PipelineBuilder';
+import { createTransitionResolverBuilder } from '../lib/spi/StaticTransitionResolverBuilder';
+import { PipelineDriver } from '../lib/PipelineDriver';
+import { InMemoryStateRepository } from '../examples/in-memory-repository/InMemoryStateRepository';
+import { Task, TaskContext, TaskState } from '../examples/in-memory-repository/model';
 import { fixedRetryPolicy } from '@sha1n/about-time';
 import { Chance } from 'chance';
 
