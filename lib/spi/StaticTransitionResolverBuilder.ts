@@ -4,8 +4,20 @@ import type { StatefulPipelineEntity, Handler, HandlerContext } from '../types';
 class StaticTransitionResolverBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext> {
   private readonly resolver = new StaticTransitionResolver<T, S, C>();
 
-  withTransition(from: S, to: S, through: Handler<T, C>): StaticTransitionResolverBuilder<T, S, C> {
-    this.resolver.registerTransition(from, to, through);
+  withTransition(
+    from: S,
+    to: S,
+    through: Handler<T, C> | ((entity: T, ctx: C) => Promise<T>)
+  ): StaticTransitionResolverBuilder<T, S, C> {
+    this.resolver.registerTransition(
+      from,
+      to,
+      typeof through === 'function'
+        ? {
+            handle: through
+          }
+        : through
+    );
     return this;
   }
 
