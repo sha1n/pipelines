@@ -56,11 +56,9 @@ class PipelineBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerC
   }
 }
 
-function createPipelineBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>(): PipelineBuilder<
-  T,
-  S,
-  C
-> {
+// eslint-disable-next-line prettier/prettier
+function createPipelineBuilder
+  <T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>(): PipelineBuilder<T, S, C> {
   return new PipelineBuilder<T, S, C>();
 }
 
