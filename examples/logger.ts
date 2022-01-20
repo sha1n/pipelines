@@ -7,7 +7,7 @@ export interface Logger {
   error(message: string): void;
 }
 
-export function newLogger(namespace: string): Logger {
+export function createLogger(namespace: string): Logger {
   return {
     info: dbg(`info:${namespace}`),
     warn: dbg(`warn:${namespace}`),

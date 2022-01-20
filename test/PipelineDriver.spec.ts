@@ -1,40 +1,35 @@
-import { newLogger } from '../examples/logger';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { createLogger } from '../examples/logger';
 import { createPipelineBuilder } from '../lib/PipelineBuilder';
 import { createTransitionResolverBuilder } from '../lib/spi/StaticTransitionResolverBuilder';
 import { PipelineDriver } from '../lib/PipelineDriver';
 import { InMemoryStateRepository } from '../lib/spi/InMemoryStateRepository';
-import { Task, TaskContext, TaskState } from '../examples/model';
+import { MyEntity, MyContext, MyState } from './examples';
 import { fixedRetryPolicy } from '@sha1n/about-time';
 import { Chance } from 'chance';
 
 describe('PipelineDriver', () => {
   const chance = new Chance();
   const expectedError = new Error(chance.string());
-  const pipeline = createPipelineBuilder<Task, TaskState, TaskContext>()
+  const pipeline = createPipelineBuilder<MyEntity, MyState, MyContext>()
     .withStateRepository(new InMemoryStateRepository())
     .withOnBeforeHandler(async (entity /*, ctx*/) => {
-      entity.execCount += 1;
-      entity.startTime = Date.now();
+      entity.evidence.push(chance.string());
       return entity;
     })
-    .withOnAfterHandler(async (entity /*, ctx*/) => {
-      entity.elapsedTime = Date.now() - entity.startTime;
-    })
     .withTransitionResolver(
-      createTransitionResolverBuilder<Task, TaskState, TaskContext>()
-        .withTerminalStates(TaskState.Completed, TaskState.Failed, TaskState.Cancelled)
-        .withTransition(TaskState.Submitted, TaskState.Started, {
-          async handle(entity: Task, ctx: TaskContext): Promise<Task> {
-            ctx.logger.info('Starting...');
+      createTransitionResolverBuilder<MyEntity, MyState, MyContext>()
+        .withTerminalStates(MyState.Completed, MyState.Failed)
+        .withTransition(MyState.A, MyState.B, {
+          async handle(entity: MyEntity, ctx: MyContext): Promise<MyEntity> {
             return entity;
           }
         })
-        .withTransition(TaskState.Started, TaskState.Completed, {
-          async handle(entity: Task, ctx: TaskContext): Promise<Task> {
-            if (entity.execCount < 3) {
+        .withTransition(MyState.B, MyState.Completed, {
+          async handle(entity: MyEntity, ctx: MyContext): Promise<MyEntity> {
+            if (entity.evidence.length < 3) {
               throw expectedError;
             }
-            ctx.logger.info('Completing...');
             return entity;
           }
         })
@@ -44,19 +39,17 @@ describe('PipelineDriver', () => {
 
   test('should fail if a handler fails', async () => {
     const driver = new PipelineDriver(pipeline);
-    const task = new Task();
-    const logger = newLogger(`demo:task:run:${task.id}`);
+    const task = new MyEntity();
 
-    await expect(driver.push(task, { logger })).rejects.toThrow(expectedError);
+    await expect(driver.push(task, {})).rejects.toThrow(expectedError);
   });
 
   test('should retry when provided with a retry policy and drive the task through to completion', async () => {
     const driver = new PipelineDriver(pipeline, fixedRetryPolicy([1]));
-    const task = new Task();
-    const logger = newLogger(`demo:task:run:${task.id}`);
+    const task = new MyEntity();
 
-    const out = await driver.push(task, { logger });
+    const out = await driver.push(task, {});
 
-    expect(out.state).toEqual(TaskState.Completed);
+    expect(out.state).toEqual(MyState.Completed);
   });
 });

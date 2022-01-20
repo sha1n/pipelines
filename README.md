@@ -7,6 +7,13 @@
 # Pipelines
 A mini-framework for building state driven pipelines. A pipeline can be a simple chain of responsibilities that run in process, but it really gets interesting when the process is distributed.
 
+- [Pipelines](#pipelines)
+  - [What's a Pipeline?](#whats-a-pipeline)
+  - [Why use pipelines?](#why-use-pipelines)
+  - [Simple build pipeline example](#simple-build-pipeline-example)
+  - [Build pipeline demo](#build-pipeline-demo)
+  - [Install](#install)
+
 ## What's a Pipeline?
 A pipeline is an abstract process that goes through several execution steps until it reaches a terminal state. A pipeline is stateful and defines  several abstractions:
 1. a `StatefulPipelineEntity` - carries the state of the process represented by the pipeline.
@@ -23,50 +30,89 @@ Pipelines break complex algorithms into smaller steps that have a lot of flexibi
 - With consistent contextual information and data in all handlers, it is easier to monitor and create effective logs
 - A pipeline can be composed of steps that run local actions and remote actions. A pipeline can be driven by a mixture of HTTP/RPC requests, MQ messages, in process triggers and still look and behave like one consistent flow.
 
-## Usage Example
+## Simple build pipeline example
+See full example code [here](examples/build-pipeline)
+
 ```ts
 // Building a pipeline for a task
-  const pipeline = createPipelineBuilder<Task, TaskState, TaskContext>()
-    .withStateRepository(new InMemoryStateRepository())
-    .withOnBeforeHandler(async (entity /*, ctx*/) => {
-      entity.execCount += 1;
-      entity.startTime = Date.now();
-      return entity;
-    })
-    .withOnAfterHandler(async (entity /*, ctx*/) => {
-      entity.elapsedTime = Date.now() - entity.startTime;
-    })
-    .withTransitionResolver(
-      createTransitionResolverBuilder<Task, TaskState, TaskContext>()
-        .withTerminalStates(TaskState.Completed, TaskState.Failed, TaskState.Cancelled)
-        .withTransition(TaskState.Submitted, TaskState.Started, {
-          async handle(entity: Task, ctx: TaskContext): Promise<Task> {
-            ctx.logger.info('Starting...');
-            return entity;
-          }
-        })
-        .withTransition(TaskState.Started, TaskState.Completed, {
-          async handle(entity: Task, ctx: TaskContext): Promise<Task> {
-            if (entity.execCount < 3) {
-              throw expectedError;
-            }
-            ctx.logger.info('Completing...');
-            return entity;
-          }
-        })
-        .build()
-    )
-    .build();
+const pipeline = createPipelineBuilder<BuildTask, BuildState, BuildContext>()
+  .withStateRepository(new BuildTasksRepository())
+  .withOnBeforeHandler(async (task, ctx) => {
+    ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: ${task.state}`);
+    return task;
+  })
+  .withOnAfterHandler(async (task, ctx) => {
+    ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: State is now ${task.state}`);
+  })
+  .withTransitionResolver(
+    createTransitionResolverBuilder<BuildTask, BuildState, BuildContext>()
+      .withTerminalStates(BuildState.Completed, BuildState.Failed, BuildState.Cancelled)
+      .withTransition(BuildState.Initiated, BuildState.WorkspaceSetup, {
+        async handle(task: BuildTask, ctx: BuildContext): Promise<BuildTask> {
+          await execute('mkdir', ['-p', ctx.workspaceDir]);
+          await execute('git', ['clone', '--depth=1', task.repositoryUrl, ctx.workspaceDir]);
+
+          return task;
+        }
+      })
+      .withTransition(BuildState.WorkspaceSetup, BuildState.InstallCompleted, {
+        async handle(task: BuildTask, ctx: BuildContext): Promise<BuildTask> {
+          await execute('yarn', ['install'], ctx.workspaceDir);
+          await execute('yarn', ['build'], ctx.workspaceDir);
+          return task;
+        }
+      })
+      .withTransition(BuildState.InstallCompleted, BuildState.TestCompleted, {
+        async handle(entity: BuildTask, ctx: BuildContext): Promise<BuildTask> {
+          await execute('yarn', ['test'], ctx.workspaceDir);
+          return entity;
+        }
+      })
+      .withTransition(BuildState.TestCompleted, BuildState.Completed, {
+        async handle(entity: BuildTask, ctx: BuildContext): Promise<BuildTask> {
+          await execute('echo', ['🥳 🎉 Build pipeline finished successfully!']);
+          await cleanup(ctx);
+          return entity;
+        }
+      })
+      .build()
+  )
+  .build();
 
 
 // Configuring a pipeline driver
-const handlerRetryPolicy = simpleRetryPolicy(3, 100, TimeUnit.Milliseconds);
-const driver = new PipelineDriver(pipeline, handlerRetryPolicy);
+const driver = new PipelineDriver(pipeline);
 
 // Using the pipeline driver to run a task
-const task = new Task();
-await driver.push(task, {
-  logger: newLogger(`demo:task:run:${task.id}`),
-});
+const task = new BuildTask('git@github.com:sha1n/pipelines.git');
+const wsBasePath = path.join(os.tmpdir(), 'build-pipelines');
+const ctx = <BuildContext>{
+  workspaceDir: path.join(wsBasePath, task.id),
+  elapsed: stopwatch(),
+  logger: createLogger(`build:${task.id}`)
+};
 
+driver.push(task, ctx).finally(() => {
+  return retryAround(() => execute('rm', ['-rf', wsBasePath]), exponentialBackoffRetryPolicy(2));
+});
+```
+
+## Build pipeline demo
+```bash
+yarn install && yarn run demo
+```
+
+or using NPM
+
+```bash
+npm i && npm run demo
+```
+
+## Install 
+```bash
+yarn install @sha1n/pipelines
+```
+
+```bash
+npm i @sha1n/pipelines
 ```

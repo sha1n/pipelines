@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import type { StatefulPipelineEntity, HandlerContext } from '../lib/types';
 
 enum MyState {
@@ -9,6 +10,7 @@ enum MyState {
 }
 
 class MyEntity implements StatefulPipelineEntity<MyState> {
+  id: string = uuid();
   evidence: string[] = [];
 
   constructor(public state: MyState = MyState.A) {}
@@ -18,8 +20,6 @@ class MyEntity implements StatefulPipelineEntity<MyState> {
   }
 }
 
-type MyContext = {
-  id: string;
-} & HandlerContext;
+type MyContext = HandlerContext;
 
 export { MyEntity, MyState, MyContext };
