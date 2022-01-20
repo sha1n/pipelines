@@ -6,7 +6,7 @@ import { PipelineDriver } from '../../lib/PipelineDriver';
 import { createTransitionResolverBuilder } from '../../lib/spi/StaticTransitionResolverBuilder';
 import { createLogger } from '../logger';
 import { BuildContext, BuildState, BuildTask } from './model';
-import { Repository } from './BuildTasksRepository';
+import { BuildTasksRepository } from './BuildTasksRepository';
 import { execute } from './shell';
 
 async function cleanup(ctx: BuildContext) {
@@ -16,7 +16,7 @@ async function cleanup(ctx: BuildContext) {
 }
 
 const pipeline = createPipelineBuilder<BuildTask, BuildState, BuildContext>()
-  .withStateRepository(new Repository())
+  .withStateRepository(new BuildTasksRepository())
   .withOnBeforeHandler(async (task, ctx) => {
     ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: Going to handle state: ${task.state}`);
     return task;

@@ -11,4 +11,4 @@ class BuildTasksRepository extends InMemoryStateRepository<BuildTask, BuildConte
   }
 }
 
-export { BuildTasksRepository as Repository };
+export { BuildTasksRepository };
