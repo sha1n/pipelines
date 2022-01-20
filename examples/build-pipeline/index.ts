@@ -1,5 +1,5 @@
 import { stopwatch, TimeUnit, retryAround, exponentialBackoffRetryPolicy } from '@sha1n/about-time';
-import path from 'path/posix';
+import path from 'path';
 import os from 'os';
 import { createPipelineBuilder } from '../../lib/PipelineBuilder';
 import { PipelineDriver } from '../../lib/PipelineDriver';
