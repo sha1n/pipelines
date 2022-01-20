@@ -1,4 +1,4 @@
-import { newLogger } from '../examples/logger';
+import { createLogger } from '../examples/logger';
 import { createPipelineBuilder } from '../lib/PipelineBuilder';
 import { createTransitionResolverBuilder } from '../lib/spi/StaticTransitionResolverBuilder';
 import { PipelineDriver } from '../lib/PipelineDriver';
@@ -45,7 +45,7 @@ describe('PipelineDriver', () => {
   test('should fail if a handler fails', async () => {
     const driver = new PipelineDriver(pipeline);
     const task = new Task();
-    const logger = newLogger(`demo:task:run:${task.id}`);
+    const logger = createLogger(`demo:task:run:${task.id}`);
 
     await expect(driver.push(task, { logger })).rejects.toThrow(expectedError);
   });
@@ -53,7 +53,7 @@ describe('PipelineDriver', () => {
   test('should retry when provided with a retry policy and drive the task through to completion', async () => {
     const driver = new PipelineDriver(pipeline, fixedRetryPolicy([1]));
     const task = new Task();
-    const logger = newLogger(`demo:task:run:${task.id}`);
+    const logger = createLogger(`demo:task:run:${task.id}`);
 
     const out = await driver.push(task, { logger });
 

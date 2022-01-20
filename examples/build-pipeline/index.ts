@@ -4,9 +4,9 @@ import os from 'os';
 import { createPipelineBuilder } from '../../lib/PipelineBuilder';
 import { PipelineDriver } from '../../lib/PipelineDriver';
 import { createTransitionResolverBuilder } from '../../lib/spi/StaticTransitionResolverBuilder';
-import { newLogger } from '../logger';
+import { createLogger } from '../logger';
 import { BuildContext, BuildState, BuildTask } from './model';
-import { Repository } from './Repository';
+import { Repository } from './BuildTasksRepository';
 import { execute } from './shell';
 
 async function cleanup(ctx: BuildContext) {
@@ -73,7 +73,7 @@ const wsBasePath = path.join(os.tmpdir(), 'build-pipelines');
 const ctx = <BuildContext>{
   workspaceDir: path.join(wsBasePath, task.id),
   elapsed: stopwatch(),
-  logger: newLogger(`build:${task.id}`)
+  logger: createLogger(`build:${task.id}`)
 };
 
 driver.push(task, ctx).finally(() => {
