@@ -1,9 +1,18 @@
 import { TimeUnit } from '@sha1n/about-time';
 import { createPipelineBuilder } from '../../lib/PipelineBuilder';
 import { createTransitionResolverBuilder } from '../../lib/spi/StaticTransitionResolverBuilder';
-import { BuildTasksRepository } from './BuildTasksRepository';
+import { InMemoryStateRepository } from '../../lib/spi/InMemoryStateRepository';
 import { BuildContext, BuildState, BuildTask } from './model';
 import { execute } from './shell';
+
+class BuildTasksRepository extends InMemoryStateRepository<BuildTask, BuildContext> {
+  async update(task: BuildTask, ctx: BuildContext): Promise<BuildTask> {
+    ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: Updating task: ${task.state}`);
+    task.dateUpdated = new Date();
+
+    return super.update(task, ctx);
+  }
+}
 
 async function cleanup(ctx: BuildContext) {
   ctx.logger.info(`🧹 Deleting workspace: ${ctx.workspaceDir}...`);
