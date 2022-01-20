@@ -18,7 +18,7 @@ class StaticTransitionResolverBuilder<T extends StatefulPipelineEntity<S>, S, C 
     return this;
   }
 
-  withPassthrough(from: S, to: S): StaticTransitionResolverBuilder<T, S, C> {
+  withPassThrough(from: S, to: S): StaticTransitionResolverBuilder<T, S, C> {
     this.resolver.registerTransition(from, to, {
       handle(entity) {
         return Promise.resolve(entity);

@@ -21,9 +21,9 @@ describe('StaticTransitionResolverBuilder', () => {
     expect(resolver.resolveTransitionFrom(new MyEntity(MyState.Completed))).toEqual(Terminal);
   });
 
-  test('should create proper passthrough records', async () => {
+  test('should create proper pass-through records', async () => {
     const resolver = createTransitionResolverBuilder<MyEntity, MyState, HandlerContext>()
-      .withPassthrough(MyState.A, MyState.C)
+      .withPassThrough(MyState.A, MyState.C)
       .build();
     const entity = new MyEntity(MyState.A);
 
