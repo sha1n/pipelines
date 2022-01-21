@@ -10,6 +10,7 @@ function execute(command: string, args: ReadonlyArray<string>, cwd?: string): Pr
   return new Promise<number>((resolve, reject) => {
     p.on('error', reject);
     p.on('exit', resolve);
+    p.on('close', resolve);
   });
 }
 
