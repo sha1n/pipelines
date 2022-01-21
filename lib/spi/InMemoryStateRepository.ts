@@ -22,4 +22,4 @@ class InMemoryStateRepository<T extends Identifiable, C extends HandlerContext> 
   }
 }
 
-export { InMemoryStateRepository };
+export { InMemoryStateRepository, Identifiable };

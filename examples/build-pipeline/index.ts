@@ -1,7 +1,7 @@
 import { exponentialBackoffRetryPolicy, retryAround, stopwatch } from '@sha1n/about-time';
 import os from 'os';
 import path from 'path';
-import { PipelineDriver } from '../../lib/PipelineDriver';
+import { PipelineDriver } from '../..';
 import { createLogger } from '../../lib/logger';
 import { BuildContext, BuildTask } from './model';
 import pipeline from './pipeline';

@@ -1,7 +1,5 @@
 import { TimeUnit } from '@sha1n/about-time';
-import { createPipelineBuilder } from '../../lib/PipelineBuilder';
-import { createTransitionResolverBuilder } from '../../lib/spi/StaticTransitionResolverBuilder';
-import { InMemoryStateRepository } from '../../lib/spi/InMemoryStateRepository';
+import { createPipelineBuilder, createTransitionResolverBuilder, InMemoryStateRepository } from '../..';
 import { BuildContext, BuildState, BuildTask } from './model';
 import { execute } from './shell';
 
