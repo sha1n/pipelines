@@ -32,33 +32,35 @@ export default createPipelineBuilder<BuildTask, BuildState, BuildContext>()
   .withTransitionResolver(
     createTransitionResolverBuilder<BuildTask, BuildState, BuildContext>()
       .withTerminalStates(BuildState.Completed, BuildState.Failed, BuildState.Cancelled)
-      .withTransition(BuildState.Initiated, BuildState.WorkspaceSetup, {
-        async handle(task: BuildTask, ctx: BuildContext): Promise<BuildTask> {
-          await execute('mkdir', ['-p', ctx.workspaceDir]);
-          await execute('git', ['clone', '--depth=1', task.repositoryUrl, ctx.workspaceDir]);
+      // eslint-disable-next-line prettier/prettier
+      .withTransition(BuildState.Initiated, BuildState.WorkspaceSetup, 
+        async (task: BuildTask, ctx: BuildContext) => {
+        await execute('mkdir', ['-p', ctx.workspaceDir]);
+        await execute('git', ['clone', '--depth=1', task.repositoryUrl, ctx.workspaceDir]);
 
-          return task;
-        }
+        return task;
       })
-      .withTransition(BuildState.WorkspaceSetup, BuildState.InstallCompleted, {
-        async handle(task: BuildTask, ctx: BuildContext): Promise<BuildTask> {
+      .withTransition(
+        BuildState.WorkspaceSetup,
+        BuildState.InstallCompleted,
+        async (task: BuildTask, ctx: BuildContext) => {
           await execute('yarn', ['install'], ctx.workspaceDir);
           await execute('yarn', ['build'], ctx.workspaceDir);
           return task;
         }
-      })
-      .withTransition(BuildState.InstallCompleted, BuildState.TestCompleted, {
-        async handle(entity: BuildTask, ctx: BuildContext): Promise<BuildTask> {
+      )
+      .withTransition(
+        BuildState.InstallCompleted,
+        BuildState.TestCompleted,
+        async (task: BuildTask, ctx: BuildContext) => {
           await execute('yarn', ['test'], ctx.workspaceDir);
-          return entity;
+          return task;
         }
-      })
-      .withTransition(BuildState.TestCompleted, BuildState.Completed, {
-        async handle(entity: BuildTask, ctx: BuildContext): Promise<BuildTask> {
-          await execute('echo', ['🥳 🎉 Build pipeline finished successfully!']);
-          await cleanup(ctx);
-          return entity;
-        }
+      )
+      .withTransition(BuildState.TestCompleted, BuildState.Completed, async (task: BuildTask, ctx: BuildContext) => {
+        await execute('echo', ['🥳 🎉 Build pipeline finished successfully!']);
+        await cleanup(ctx);
+        return task;
       })
       .build()
   )
