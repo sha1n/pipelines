@@ -1,6 +1,6 @@
 {
   "name": "@sha1n/pipelines",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A mini-framework for multi-stage pipeline execution",
   "repository": "https://github.com/sha1n/pipelines",
   "author": "Shai Nagar",
@@ -30,7 +30,7 @@
     "demo": "DEBUG=*pipelines:* ts-node ./examples/build-pipeline/index.ts"
   },
   "dependencies": {
-    "@sha1n/about-time": "^0.0.1",
+    "@sha1n/about-time": "^0.0.4",
     "@types/debug": "~4.1.7",
     "@types/node": "~17.0.8",
     "ts-node": "~10.4.0",
