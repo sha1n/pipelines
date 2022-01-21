@@ -9,11 +9,13 @@ import type {
   StatefulPipelineEntity,
   StateRepository
 } from './types';
+import { createLogger } from './logger';
 
 class Pipeline<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext> {
   private readonly onError: OnErrorHandler<T, C>;
   private readonly onBefore: OnBeforeHandler<T, C>;
   private readonly onAfter: OnAfterHandler<T, C>;
+  private readonly logger = createLogger(Pipeline.name);
 
   constructor(
     private readonly transitionResolver: TransitionResolver<T, S, C>,
@@ -29,6 +31,7 @@ class Pipeline<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>
 
   async handle(entity: T, ctx: C): Promise<T> {
     try {
+      this.logger.debug('Going to handler entity. State: [%s]', entity.state);
       let modifiedEntity = await this.onBefore(entity, ctx);
 
       const mappingOrTerminal = this.transitionResolver.resolveTransitionFrom(entity, ctx);
@@ -46,6 +49,7 @@ class Pipeline<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>
 
       return modifiedEntity;
     } catch (e) {
+      this.logger.error(e);
       return this.onError(e, entity, ctx);
     }
   }

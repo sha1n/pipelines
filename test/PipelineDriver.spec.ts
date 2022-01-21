@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createLogger } from '../examples/logger';
+import { createLogger } from '../lib/logger';
 import { createPipelineBuilder } from '../lib/PipelineBuilder';
 import { createTransitionResolverBuilder } from '../lib/spi/StaticTransitionResolverBuilder';
 import { PipelineDriver } from '../lib/PipelineDriver';
