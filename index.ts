@@ -16,3 +16,4 @@ export { PipelineDriver } from './lib/PipelineDriver';
 export { Pipeline } from './lib/Pipeline';
 export { createTransitionResolverBuilder } from './lib/spi/StaticTransitionResolverBuilder';
 export { StaticTransitionResolver } from './lib/spi/StaticTransitionResolver';
+export { default } from './lib/createPump';

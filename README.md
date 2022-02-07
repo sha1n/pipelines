@@ -36,7 +36,7 @@ Pipelines break complex algorithms into smaller steps that have a lot of flexibi
 
 ## Use Cases
 ### In Memory
-If the entire pipeline starts and ends in one call in your process, you need something to drive the entity thought the pipeline. You can either use the [`PipelineDriver`](./lib/PipelineDriver.ts), or develop something similar. See the build pipeline example [here](#simple-build-pipeline-example) and demo [here](#build-pipeline-demo).
+If the entire pipeline starts and ends in one call in your process, you need something to drive the entity thought the pipeline. You can either create a pump function using [`createPump`](./lib/createPump.ts), or a [`PipelineDriver`](./lib/PipelineDriver.ts), or create your own version. See the build pipeline example [here](#simple-build-pipeline-example) and demo [here](#build-pipeline-demo).
 
 ### Distributed
 If at least one state transition depends on an asynchronous execution (usually on an external systems), an in memory driver is not what you need. In such cases at least parts of the pipeline will have to be driven by external calls such as HTTP callbacks, MQ consumers etc.
@@ -131,8 +131,8 @@ const pipeline = createPipelineBuilder<BuildTask, BuildState, BuildContext>()
   .build();
 
 
-// Configuring an memory pipeline driver
-const driver = new PipelineDriver(pipeline);
+// Creating an in-memory pipeline pump
+const pump = createPump(pipeline);
 
 // Using the pipeline driver to run a task
 const task = new BuildTask('git@github.com:sha1n/fungus.git');
@@ -143,7 +143,7 @@ const ctx = <BuildContext>{
   logger: createLogger(`build:${task.id}`)
 };
 
-driver.push(task, ctx).finally(() => {
+pump(task, ctx).finally(() => {
   return retryAround(() => execute('rm', ['-rf', wsBasePath]), exponentialBackoffRetryPolicy(2));
 });
 ```
