@@ -16,6 +16,7 @@ describe('PipelineDriver', () => {
   const pipeline = (expectedError: Error): Pipeline<MyEntity, MyState, MyContext> => {
     return createPipelineBuilder<MyEntity, MyState, MyContext>()
       .withStateRepository(new InMemoryStateRepository())
+      .withFailedState(MyState.Failed)
       .withOnBeforeHandler(async (entity /*, ctx*/) => {
         entity.evidence.push(chance.string());
         return entity;

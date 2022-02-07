@@ -20,6 +20,7 @@ class Pipeline<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>
   constructor(
     private readonly transitionResolver: TransitionResolver<T, S, C>,
     private readonly stateRepository: StateRepository<T, C>,
+    private readonly failedState?: S,
     onError?: OnErrorHandler<T, C>,
     onBefore?: OnBeforeHandler<T, C>,
     onAfter?: OnAfterHandler<T, C>
@@ -56,8 +57,8 @@ class Pipeline<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>
 
   private readonly getDefaultErrorHandler = () => {
     return (error: Error, entity: T, ctx: C) => {
-      if (error instanceof NonRecoverablePipelineError) {
-        entity.setFailedState();
+      if (error instanceof NonRecoverablePipelineError && this.failedState) {
+        entity.state = this.failedState;
         return this.stateRepository.update(entity, ctx);
       } else {
         throw error;

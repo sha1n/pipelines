@@ -58,6 +58,8 @@ enum JobState {
 // Here is what your pipeline definition might look like
 const pipeline = createPipelineBuilder<Job, JobState, JobContext>()
   .withStateRepository(new YourPersistentRepository())
+  // optional, this tells the pipeline to set the pipeline's state to this by default when a NonRecoverablePipelineError is caught
+  .withFailedState(JobState.Failed)
   .withTransitionResolver(
     createTransitionResolverBuilder<Job, JobStats, JobContext>()
       .withTerminalStates(JobState.Completed, JobState.Failed, JobState.Cancelled)
@@ -83,6 +85,7 @@ See full example code [here](examples/build-pipeline)
 // Building a pipeline for a task
 const pipeline = createPipelineBuilder<BuildTask, BuildState, BuildContext>()
   .withStateRepository(new BuildTasksRepository())
+  .withFailedState(BuildState.Failed)
   .withOnBeforeHandler(async (task, ctx) => {
     ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: ${task.state}`);
     return task;
@@ -132,7 +135,7 @@ const pipeline = createPipelineBuilder<BuildTask, BuildState, BuildContext>()
 const driver = new PipelineDriver(pipeline);
 
 // Using the pipeline driver to run a task
-const task = new BuildTask('git@github.com:sha1n/pipelines.git');
+const task = new BuildTask('git@github.com:sha1n/fungus.git');
 const wsBasePath = path.join(os.tmpdir(), 'build-pipelines');
 const ctx = <BuildContext>{
   workspaceDir: path.join(wsBasePath, task.id),

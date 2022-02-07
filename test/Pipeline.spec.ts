@@ -14,7 +14,8 @@ import {
   aHandlerContext
 } from './mocks';
 import type { StateRepository } from '../lib/types';
-import type { MyContext, MyState } from './examples';
+import { MyState } from './examples';
+import type { MyContext } from './examples';
 
 describe('Pipeline', () => {
   test(
@@ -52,6 +53,7 @@ describe('Pipeline', () => {
       const pipeline = createPipelineBuilder()
         .withStateRepository(repository)
         .withTransitionResolver(aMockFailingHandlerResolver(expectedError))
+        .withFailedState(MyState.Failed)
         .build();
 
       await expect(pipeline.handle(entity, ctx)).resolves.toEqual(entity);
@@ -81,6 +83,7 @@ describe('Pipeline', () => {
       const pipeline = createPipelineBuilder<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
         .withTransitionResolver(aMockHandlerResolver())
+        .withFailedState(MyState.Failed)
         .withOnBeforeHandler(aMockRejectingBeforeHandler(expectedError))
         .build();
 
@@ -111,6 +114,7 @@ describe('Pipeline', () => {
       const pipeline = createPipelineBuilder<MyEntity, MyState, MyContext>()
         .withStateRepository(repository)
         .withTransitionResolver(aMockHandlerResolver())
+        .withFailedState(MyState.Failed)
         .withOnAfterHandler(aMockRejectingAfterHandler(expectedError))
         .build();
 

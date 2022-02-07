@@ -8,7 +8,7 @@ import pipeline from './pipeline';
 import { execute } from './shell';
 
 const driver = new PipelineDriver(pipeline);
-const task = new BuildTask('git@github.com:sha1n/pipelines.git');
+const task = new BuildTask('git@github.com:sha1n/fungus.git');
 const wsBasePath = path.join(os.tmpdir(), 'build-pipelines');
 const ctx = <BuildContext>{
   workspaceDir: path.join(wsBasePath, task.id),

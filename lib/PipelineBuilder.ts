@@ -13,6 +13,7 @@ import type {
 class PipelineBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext> {
   private repository: StateRepository<T, C>;
   private resolver: TransitionResolver<T, S, C>;
+  private failedState: S;
   private onErrorHandler: OnErrorHandler<T, C>;
   private onBeforeHandler: OnBeforeHandler<T, C>;
   private onAfterHandler: OnAfterHandler<T, C>;
@@ -24,6 +25,11 @@ class PipelineBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerC
 
   withTransitionResolver(resolver: TransitionResolver<T, S, C>): PipelineBuilder<T, S, C> {
     this.resolver = resolver;
+    return this;
+  }
+
+  withFailedState(failedState: S): PipelineBuilder<T, S, C> {
+    this.failedState = failedState;
     return this;
   }
 
@@ -49,6 +55,7 @@ class PipelineBuilder<T extends StatefulPipelineEntity<S>, S, C extends HandlerC
     return new Pipeline<T, S, C>(
       this.resolver,
       this.repository,
+      this.failedState,
       this.onErrorHandler,
       this.onBeforeHandler,
       this.onAfterHandler

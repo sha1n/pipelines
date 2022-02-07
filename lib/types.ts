@@ -3,11 +3,6 @@
  */
 interface StatefulPipelineEntity<S> {
   state: S;
-
-  /**
-   * Sets the state of the entity to the state that represents failure in this pipeline implementation.
-   */
-  setFailedState(): void;
 }
 
 /**

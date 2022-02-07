@@ -20,6 +20,7 @@ async function cleanup(ctx: BuildContext) {
 
 export default createPipelineBuilder<BuildTask, BuildState, BuildContext>()
   .withStateRepository(new BuildTasksRepository())
+  .withFailedState(BuildState.Failed)
   .withOnBeforeHandler(async (task, ctx) => {
     ctx.logger.info(`[elapsed: ${ctx.elapsed(TimeUnit.Seconds)}]: ${task.state}`);
     return task;
