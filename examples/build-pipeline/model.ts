@@ -21,10 +21,6 @@ class BuildTask implements StatefulPipelineEntity<BuildState> {
   state: BuildState = BuildState.Initiated;
 
   constructor(readonly repositoryUrl: string) {}
-
-  setFailedState(): void {
-    this.state = BuildState.Failed;
-  }
 }
 
 type BuildContext = {

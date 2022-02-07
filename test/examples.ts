@@ -14,10 +14,6 @@ class MyEntity implements StatefulPipelineEntity<MyState> {
   evidence: string[] = [];
 
   constructor(public state: MyState = MyState.A) {}
-
-  setFailedState(): void {
-    this.state = MyState.Failed;
-  }
 }
 
 type MyContext = HandlerContext;
