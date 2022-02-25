@@ -2,7 +2,7 @@ name: Update Dependencies
 
 on:
   schedule:
-  - interval: "monthly
+  - interval: "monthly"
 
 jobs:
   update:
