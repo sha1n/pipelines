@@ -21,13 +21,12 @@
   ],
   "scripts": {
     "clean": "rm -rf ./dist",
-    "prebuild": "yarn run clean",
     "build": "tsc",
-    "test": "jest --coverage",
+    "jest": "jest --coverage",
     "lint": "eslint --fix --ext .js,.ts .",
-    "posttest": "yarn run lint",
+    "test": "run jest && run lint",
     "prepublish": "yarn run build",
-    "demo": "DEBUG=*pipelines:* ts-node ./examples/build-pipeline/index.ts"
+    "demo": "DEBUG='*pipelines:*' ts-node ./examples/build-pipeline/index.ts"
   },
   "dependencies": {
     "@sha1n/about-time": "^0.0.7",
