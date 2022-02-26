@@ -25,7 +25,7 @@
     "jest": "jest --coverage",
     "lint": "eslint --fix --ext .js,.ts .",
     "test": "run jest && run lint",
-    "prepublish": "yarn run build",
+    "prepare": "npm run build",
     "demo": "DEBUG='*pipelines:*' ts-node ./examples/build-pipeline/index.ts"
   },
   "dependencies": {
