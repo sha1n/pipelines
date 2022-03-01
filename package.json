@@ -29,7 +29,7 @@
     "demo": "DEBUG='*pipelines:*' ts-node ./examples/build-pipeline/index.ts"
   },
   "dependencies": {
-    "@sha1n/about-time": "^0.0.7",
+    "@sha1n/about-time": "^0.0.12",
     "debug": "^4.3.3"
   },
   "devDependencies": {
