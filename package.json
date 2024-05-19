@@ -1,13 +1,17 @@
 {
   "name": "@sha1n/pipelines",
-  "version": "0.0.12",
+  "version": "0.1.0",
+  "type": "commonjs",
   "description": "A mini-framework for multi-stage pipeline execution",
   "repository": "https://github.com/sha1n/pipelines",
   "author": "Shai Nagar",
   "license": "MIT",
-  "types": "./dist/types",
   "main": "./dist",
-  "exports": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": [
+    "./dist/index.js",
+    "./dist/types/index.d.ts"
+  ],
   "keywords": [
     "pipeline",
     "process",
