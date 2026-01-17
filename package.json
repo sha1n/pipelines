@@ -28,7 +28,7 @@
     "build": "tsc",
     "jest": "jest --coverage",
     "lint": "eslint --fix --ext .js,.ts .",
-    "test": "jest && pnpm run lint",
+    "test": "pnpm run jest && pnpm run lint",
     "prepare": "pnpm run build",
     "demo": "DEBUG='*pipelines:*' ts-node ./examples/build-pipeline/index.ts"
   },
@@ -62,7 +62,7 @@
     "prettier": "^2.6.2",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.7.0",
-    "typescript": "~5.9.3",
+    "typescript": "~4.9.5",
     "uuid": "^8.3.2"
   },
   "packageManager": "pnpm@9.15.4"
