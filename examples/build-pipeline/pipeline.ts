@@ -43,8 +43,8 @@ export default createPipelineBuilder<BuildTask, BuildState, BuildContext>()
         BuildState.WorkspaceSetup,
         BuildState.InstallCompleted,
         async (task: BuildTask, ctx: BuildContext) => {
-          await execute('yarn', ['install'], ctx.workspaceDir);
-          await execute('yarn', ['build'], ctx.workspaceDir);
+          await execute('pnpm', ['install'], ctx.workspaceDir);
+          await execute('pnpm', ['run', 'build'], ctx.workspaceDir);
           return task;
         }
       )
@@ -52,7 +52,7 @@ export default createPipelineBuilder<BuildTask, BuildState, BuildContext>()
         BuildState.InstallCompleted,
         BuildState.TestCompleted,
         async (task: BuildTask, ctx: BuildContext) => {
-          await execute('yarn', ['test'], ctx.workspaceDir);
+          await execute('pnpm', ['test'], ctx.workspaceDir);
           return task;
         }
       )
