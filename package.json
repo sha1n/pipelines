@@ -25,7 +25,7 @@
   ],
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "tsc",
+    "build": "pnpm run clean && tsc",
     "jest": "jest --coverage",
     "lint": "eslint --fix --ext .js,.ts .",
     "test": "pnpm run jest && pnpm run lint",
