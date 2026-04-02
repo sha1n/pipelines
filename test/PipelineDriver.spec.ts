@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createPipelineBuilder } from '../lib/PipelineBuilder';
 import { createTransitionResolverBuilder } from '../lib/spi/StaticTransitionResolverBuilder';
 import { PipelineDriver } from '../lib/PipelineDriver';
