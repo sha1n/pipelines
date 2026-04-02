@@ -6,7 +6,7 @@ export default {
   verbose: true,
   maxWorkers: '100%',
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest'
+    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'tsconfig.json' }]
   },
   testEnvironment: 'node',
   preset: 'ts-jest',
