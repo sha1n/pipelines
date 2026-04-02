@@ -3,7 +3,8 @@
   "compilerOptions": {
     "target": "ES2019",
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "node10",
+    "ignoreDeprecations": "5.0",
     "declarationDir": "./dist/types",
     "outDir": "./dist",
     "skipLibCheck": true,
