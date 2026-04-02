@@ -5,9 +5,11 @@ import type { Handler, HandlerContext, StatefulPipelineEntity } from '../types';
 import type { TransitionRecord, TransitionResolver } from './types';
 import { createLogger } from '../logger';
 
-class StaticTransitionResolver<T extends StatefulPipelineEntity<S>, S, C extends HandlerContext>
-  implements TransitionResolver<T, S, C>
-{
+class StaticTransitionResolver<
+  T extends StatefulPipelineEntity<S>,
+  S,
+  C extends HandlerContext
+> implements TransitionResolver<T, S, C> {
   private readonly mapping = new Map<S, TransitionRecord<T, S, C> | Terminal>();
   private readonly logger = createLogger(StaticTransitionResolver.name);
 

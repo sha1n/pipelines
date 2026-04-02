@@ -62,8 +62,8 @@ describe('PipelineBuilder', () => {
     await expect(pipelineHandler.handle(entity, context)).resolves.toEqual(entity);
 
     expect(mockHandlerResolver.resolveTransitionFrom).toHaveBeenLastCalledWith(entity, context);
-    expect(mockResolvingBeforeHandler).toBeCalledWith(entity, context);
-    expect(mockResolvingAfterHandler).toBeCalledWith(entity, context);
+    expect(mockResolvingBeforeHandler).toHaveBeenCalledWith(entity, context);
+    expect(mockResolvingAfterHandler).toHaveBeenCalledWith(entity, context);
   });
 
   test('should build a working pipeline handler with custom error handler', async () => {
@@ -84,6 +84,6 @@ describe('PipelineBuilder', () => {
 
     await expect(pipelineHandler.handle(entity, context)).rejects.toThrow(expectedError);
 
-    expect(mockErrorHandler).toBeCalledWith(expectedError, entity, context);
+    expect(mockErrorHandler).toHaveBeenCalledWith(expectedError, entity, context);
   });
 });

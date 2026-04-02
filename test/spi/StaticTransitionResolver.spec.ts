@@ -52,7 +52,6 @@ describe('StaticTransitionResolver', () => {
       expect(() => resolver.registerTransition(MyState.A, MyState.Failed, aMockHandler())).toThrow(AssertionError);
     });
 
-    // eslint-disable-next-line @typescript-eslint/quotes
     test(`should register a handler mapping to transition from the 'from' to the 'to' state`, () => {
       const resolver = new StaticTransitionResolver<MyEntity, MyState, HandlerContext>();
       const entity = new MyEntity(MyState.A);
